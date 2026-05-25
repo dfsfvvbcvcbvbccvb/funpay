@@ -23,9 +23,14 @@ function LoginPage() {
             usernameOrEmail: usernameOrEmail,
             password, password
         }
+        let res = ''
 
-        await axios.post('/api/login', formdata)
-        navigate('/')
+        try {
+            res = await axios.post('/api/login', formdata)
+            navigate('/')
+        } catch (error) {
+            console.log(error)
+        }
     }
 
     return (
@@ -42,7 +47,7 @@ function LoginPage() {
                     </div>
                     <div>
                         <span className="mt-2">Или с помощью имени, почты и пароля:</span>
-                        <input onChange={(e) => setUsernameOrEmail(e.target.value)} type="email" className="form-control mt-2" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Имя или почта"></input>
+                        <input onChange={(e) => setUsernameOrEmail(e.target.value)} type="text" className="form-control mt-2" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Имя или почта"></input>
                         <input onChange={(e) => setPassword(e.target.value)} type="password" className="form-control mt-2" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Пароль"></input>
                         <a href="/account/recover" className="link-primary text-decoration-none mt-2">Забыли пароль?</a>
                     </div>

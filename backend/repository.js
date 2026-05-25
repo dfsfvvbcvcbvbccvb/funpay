@@ -28,5 +28,17 @@ export async function registration(formdata) {
 
 export async function login(formdata) {
     let connection = await getConnection()
+    let password = formdata.password
+    let [rows] = await connection.execute(
+        `SELECT password FROM accounts WHERE login = '${formdata.usernameOrEmail}'`
+    )
+    let hashedPassword = rows[0].password
+    let isMatch = await bcrypt.compare(String(password), String(hashedPassword))
+    console.log(isMatch)
+    if (isMatch === false) {
+        return 'Неверный логин или пароль!'
+    } else {
+        return 'Успешно!'
+    }
 }
 
