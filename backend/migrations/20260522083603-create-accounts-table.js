@@ -8,6 +8,15 @@ export function up(db) {
       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     )
   `);
+  return db.runSql(`
+    CREATE TABLE IF NOT EXISTS games (
+      id INT PRIMARY KEY AUTO_INCREMENT,
+      name VARCHAR(255) NOT NULL UNIQUE,
+      description VARCHAR(255) NOT NULL,
+      categories VARCHAR(255) NOT NULL UNIQUE,
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )
+  `);
 }
 
 export function down(db) {

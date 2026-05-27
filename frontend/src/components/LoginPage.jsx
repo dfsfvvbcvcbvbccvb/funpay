@@ -21,12 +21,13 @@ function LoginPage() {
 
         let formdata = {
             usernameOrEmail: usernameOrEmail,
-            password, password
+            password: password
         }
         let res = ''
 
         try {
             res = await axios.post('/api/login', formdata)
+            localStorage.setItem('loginned', true)
             navigate('/')
         } catch (error) {
             console.log(error)

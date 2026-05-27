@@ -3,6 +3,8 @@ import Dashboard from './components/Dashboard';
 import LoginPage from './components/LoginPage';
 import RegisterPage from './components/RegisterPage';
 import Rules from './components/Rules';
+import SupportDashboard from './components/support/SupportDashboard';
+import GameInfo from './components/GameInfo';
 
 function AppRoutes() {
 
@@ -12,6 +14,8 @@ function AppRoutes() {
             <Route path="/account/login" element={<LoginPage/>}/>
             <Route path="/account/register" element={<RegisterPage/>}/>
             <Route path="/trade/info" element={<Rules/>}/>
+            <Route path="/support" element={<SupportDashboard/>}/>
+            <Route path="/lots" element={<GameInfo/>}/>
         </Routes>
     )
 }

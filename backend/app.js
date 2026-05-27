@@ -19,7 +19,11 @@ app.post('/api/register', async (req, res) => {
     let formdata = req.body
 
     let response = await registration(formdata)
-    res.json({ success: true, message: response });
+    res.json({message: response})
+});
+
+app.post('/api/getGameInfo', async (req, res) => {
+    let formdata = req.body
 });
 
 app.listen(PORT, () => {

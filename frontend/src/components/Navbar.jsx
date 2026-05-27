@@ -4,7 +4,9 @@ import { Dropdown } from 'bootstrap/dist/js/bootstrap.bundle';
 
 function Navbar() {
 
-    let loginned = false
+    let loginned = Boolean(localStorage.getItem('loginned'))
+    let language = localStorage.getItem('language')
+
 
     function changeValue(value) {
         localStorage.setItem('value', value)
@@ -36,9 +38,9 @@ function Navbar() {
                 </button>
                 <ul className="dropdown-menu" aria-labelledby="dropdownMenuButton1">
                     <li><a className="dropdown-item" href="/trade/info">Правила</a></li>
-                    <li><a className="dropdown-item" href="/">Центр помощи</a></li>
-                    <li><a className="dropdown-item" href="/">Отправить запрос</a></li>
-                    <li><a className="dropdown-item" href="/">Мои запросы</a></li>
+                    <li><a className="dropdown-item" href="/support">Центр помощи</a></li>
+                    <li><a className="dropdown-item" href="/support/tickets/new">Отправить запрос</a></li>
+                    {loginned ? ( <li><a className="dropdown-item" href="/">Мои запросы</a></li>) : ( <></> ) }
                 </ul>
                 </div>
                 </div>
