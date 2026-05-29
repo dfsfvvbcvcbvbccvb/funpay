@@ -13,10 +13,15 @@ export function up(db) {
       id INT PRIMARY KEY AUTO_INCREMENT,
       name VARCHAR(255) NOT NULL UNIQUE,
       description VARCHAR(255) NOT NULL,
-      categories VARCHAR(255) NOT NULL UNIQUE,
       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     )
   `);
+  return db.runSql(`
+    CREATE TABLE IF NOT EXISTS categories (
+      id INT PRIMARY KEY AUTO_INCREMENT,
+      name VARCHAR(255) NOT NULL UNIQUE
+    )
+  `)
 }
 
 export function down(db) {

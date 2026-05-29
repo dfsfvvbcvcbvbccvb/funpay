@@ -42,3 +42,20 @@ export async function login(formdata) {
     }
 }
 
+export async function getGameById(formdata) {
+    let connection = await getConnection()
+    let id = formdata.id
+    let [rows] = await connection.execute(
+        `SELECT * FROM games WHERE id = '${id}'`
+    )
+    return rows
+}
+
+export async function getGames() {
+    let connection = await getConnection()
+    let [rows] = await connection.execute(
+        `SELECT * FROM games`
+    )
+    return rows
+}
+
