@@ -28,7 +28,7 @@ app.post('/api/games', async (req, res) => {
 });
 
 app.post('/api/game/:id', async (req, res) => {
-    let formdata = req.body
+    let formdata = req.params.id
     let response = await getGameById(formdata)
     res.json(response)
 });
