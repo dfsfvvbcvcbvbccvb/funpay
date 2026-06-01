@@ -4,8 +4,8 @@ import axios from "axios";
 
 function GameInfo() {
 
-    async function getGameInfo() {
-
+    async function getGameInfo(id) {
+        let game = await axios.post(`/api/game/${id}`)
     }
 
   return (

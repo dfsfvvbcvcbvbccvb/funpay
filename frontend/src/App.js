@@ -5,6 +5,7 @@ import RegisterPage from './components/RegisterPage';
 import Rules from './components/Rules';
 import SupportDashboard from './components/support/SupportDashboard';
 import GameInfo from './components/GameInfo';
+import CreateGame from './components/CreateGame';
 
 function AppRoutes() {
 
@@ -16,6 +17,7 @@ function AppRoutes() {
             <Route path="/trade/info" element={<Rules/>}/>
             <Route path="/support" element={<SupportDashboard/>}/>
             <Route path="/lots" element={<GameInfo/>}/>
+            <Route path="/game/create" element={<CreateGame/>}/>
         </Routes>
     )
 }

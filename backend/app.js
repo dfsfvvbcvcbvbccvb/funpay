@@ -1,6 +1,6 @@
-import express from 'express';
+import express, { response } from 'express';
 import mysql from 'mysql2/promise';
-import { registration, login, getGames, getGameById } from './repository.js';
+import { registration, login, getGames, getGameById, createGame } from './repository.js';
 const app = express()
 const PORT = 4000
 
@@ -26,6 +26,11 @@ app.post('/api/games', async (req, res) => {
     let response = await getGames()
     res.json(response)
 });
+
+app.post('/game/create', async (req,res) => {
+    let response = await createGame(req.body)
+    res.json(response)
+})
 
 app.post('/api/game/:id', async (req, res) => {
     let formdata = req.params.id

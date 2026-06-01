@@ -52,6 +52,24 @@ export async function getGameById(formdata) {
     return rows
 }
 
+export async function createCategory(formdata) {
+    let connection = await getConnection()
+    await connection.execute(
+        `INSERT INTO categories (name) VALUES (?)`,
+        [formdata.name]
+    )
+    return 'Успешно!'
+}
+
+export async function createGame(formdata) {
+    let connection = await getConnection()
+    await connection.execute(
+        `INSERT INTO games (name, description) VALUES (?, ?)`,
+        [formdata.name, formdata.description]
+    )
+    return 'Успешно!'
+}
+
 export async function getGames() {
     let connection = await getConnection()
     let [rows] = await connection.execute(

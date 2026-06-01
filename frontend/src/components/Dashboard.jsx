@@ -7,9 +7,9 @@ function Dashboard() {
 
   const [games, setGames] = useState([])
 
-  useEffect(async () => {
-    let tempGames = await axios.post('/api/games')
-  }, [])
+  //useEffect(async () => {
+   // let tempGames = await axios.post('/api/games')
+  //}, [])
 
   return (
     <div className="ms-5 me-5">
