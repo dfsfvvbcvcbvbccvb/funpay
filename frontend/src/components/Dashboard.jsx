@@ -7,9 +7,19 @@ function Dashboard() {
 
   const [games, setGames] = useState([])
 
-  //useEffect(async () => {
-   // let tempGames = await axios.post('/api/games')
-  //}, [])
+useEffect(() => {
+  const loadingGames = async () => {
+    try {
+      let response = await axios.post('/api/games')
+      setGames(response.data)
+    } catch (e) {
+      console.log(e)
+    }
+  }
+  loadingGames()
+}, [])
+
+console.log(games)
 
   return (
     <div className="ms-5 me-5">
@@ -23,9 +33,6 @@ function Dashboard() {
       {games.map(game => (
         <div className="m-2 row">
           <a className="col-9 text-decoration-none link-secondary" href={`/lots/${game.id}`}>{game.name}</a>
-          {game.categories.map(category => (
-            <a href={`/lots/${game.id}/${category.id}`} className="col-6">{category.name}</a>
-          ))}
       </div>
       ))}
       

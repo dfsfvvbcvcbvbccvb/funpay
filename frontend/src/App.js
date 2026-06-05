@@ -6,6 +6,9 @@ import Rules from './components/Rules';
 import SupportDashboard from './components/support/SupportDashboard';
 import GameInfo from './components/GameInfo';
 import CreateGame from './components/CreateGame';
+import CreateCategory from './components/CreateCategory';
+import CreateLot from './components/CreateLot';
+import Orders from './components/Orders';
 
 function AppRoutes() {
 
@@ -18,6 +21,8 @@ function AppRoutes() {
             <Route path="/support" element={<SupportDashboard/>}/>
             <Route path="/lots" element={<GameInfo/>}/>
             <Route path="/game/create" element={<CreateGame/>}/>
+            <Route path="/category/create" element={<CreateCategory/>}/>
+            <Route path="/lots/create" element={<CreateLot/>}/>
         </Routes>
     )
 }
