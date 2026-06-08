@@ -2,15 +2,29 @@ import Navbar from "./Navbar"
 import Footer from "./Footer"
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { useState } from "react";
 
 function CreateCategory() {
 
     const navigate = useNavigate()
+    const [name, setName] = useState('')
+    const [description, setDescription] = useState('')
+    const [error, setError] = useState('')
 
     async function handleFormSubmit(e) {
         e.preventDefault()
-        let response = await axios.post('/category/create')
-        navigate('/')
+        let formdata = {
+            name: name,
+            description: description
+        }
+        let response = await axios.post('/category/create', formdata)
+        if (response.data !== 'Успешно!') {
+            setError(response.data)
+            return
+        }
+        if (response.data === 'Успешно!') {
+            navigate('/')
+        }
     }
 
     return (
@@ -25,9 +39,14 @@ function CreateCategory() {
                 <h1>Создание категории</h1>
                 <form onSubmit={handleFormSubmit}>
                 <div>
-                    <input className="form-control form-control-lg m-2" type="text" placeholder="Name" aria-label=".form-control-lg example"></input>
-                    <input className="form-control m-2" type="text" placeholder="Description" aria-label="default input example"></input>
+                    <input className="form-control form-control-lg m-2" onChange={(e) => setName(e.target.value)} type="text" placeholder="Name" aria-label=".form-control-lg example"></input>
+                    <input className="form-control m-2" type="text" onChange={(e) => setDescription(e.target.value)} placeholder="Description" aria-label="default input example"></input>
                     <button className="btn btn-primary m-2" type="submit">Создать</button>
+                    {error && (
+                    <div class="alert alert-danger mt-2">
+                        <h3>{error}</h3>
+                    </div>
+                    )}
                 </div>
                 </form>
             </div>

@@ -7,6 +7,7 @@ function LoginPage() {
 
     const [usernameOrEmail, setUsernameOrEmail] = useState('')
     const [password, setPassword] = useState('')
+    const [error, setError] = useState('')
     const navigate = useNavigate('')
 
     async function handleFormSubmit(e) {
@@ -27,8 +28,14 @@ function LoginPage() {
 
         try {
             res = await axios.post('/api/login', formdata)
-            localStorage.setItem('loginned', true)
-            navigate('/')
+            if (res.data !== 'Успешно!') {
+                setError(res.data)
+                return
+            }
+            if (res.data === 'Успешно!') {
+                navigate('/')
+                localStorage.setItem('loginned', true)
+            }
         } catch (error) {
             console.log(error)
         }
@@ -53,6 +60,11 @@ function LoginPage() {
                         <a href="/account/recover" className="link-primary text-decoration-none mt-2">Забыли пароль?</a>
                     </div>
                     <button type="submit" className="btn btn-primary">Войти</button>
+                    {error && (
+                    <div class="alert alert-danger mt-2">
+                        <h3>{error}</h3>
+                    </div>
+                    )}
                 </div>
             </div>
             </form>

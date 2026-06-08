@@ -13,6 +13,11 @@ function Navbar() {
         return
     }
 
+    function logout() {
+        localStorage.removeItem('loginned')
+        return
+    }
+
     function changeLanguage(language) {
         if (language === 'en') {
             localStorage.setItem('language', 'en')
@@ -52,6 +57,7 @@ function Navbar() {
                         <a className='text-decoration-none link-secondary me-2' href='/chat'>Сообщения</a>
                         <a className='text-decoration-none link-secondary me-2' href='/account/balance'>Финансы</a>
                         <a className='text-decoration-none link-secondary me-2' href='/account/balance'>Профиль</a>
+                        <a className='text-decoration-none link-secondary me-2' onClick={logout} href='/'>Выход</a>
                         </>
                         ) : (
                             <>

@@ -9,31 +9,44 @@ app.use(express.urlencoded({ extended: true }))
 
 app.post('/api/login', async (req, res) => {
     let formdata = req.body
-
+    if (formdata.usernameOrEmail === '' || formdata.password === '') {
+        res.json('Заполните все поля')
+        return
+    }
     let response = await login(formdata)
-    console.log(response)
+    if (response !== 'Успешно!') {
+        res.json('Неверный логин или пароль!')
+        return
+    }
     res.json(response)
 });
 
 app.post('/api/register', async (req, res) => {
+    if (req.body.login === '' || req.body.password === '' || req.body.email === '') {
+        res.json('Заполните все поля!')
+    }
     let formdata = req.body
-
     let response = await registration(formdata)
-    res.json({message: response})
+    res.json(response)
 });
 
 app.post('/api/games', async (req, res) => {
     let response = await getGames()
-    console.log(response)
     res.json(response)
 });
 
 app.post('/game/create', async (req,res) => {
+    if (req.body.name === '' || req.body.description === '') {
+        res.json('Заполните все поля!')
+    }
     let response = await createGame(req.body)
     res.json(response)
 })
 
 app.post('/category/create', async (req,res) => {
+    if (req.body.name === '' || req.body.description === '') {
+        res.json('Заполните все поля!')
+    }
     let response = await createCategory(req.body)
     res.json(response)
 })

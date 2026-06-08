@@ -7,19 +7,17 @@ function Dashboard() {
 
   const [games, setGames] = useState([])
 
-useEffect(() => {
-  const loadingGames = async () => {
-    try {
-      let response = await axios.post('/api/games')
-      setGames(response.data)
-    } catch (e) {
-      console.log(e)
+  useEffect(() => {
+    const loadingGames = async () => {
+      try {
+        let response = await axios.post('/api/games')
+        setGames(response.data)
+      } catch (e) {
+        console.log(e)
+      }
     }
-  }
-  loadingGames()
-}, [])
-
-console.log(games)
+    loadingGames()
+  }, [])
 
   return (
     <div className="ms-5 me-5">
@@ -35,20 +33,11 @@ console.log(games)
           <a className="col-9 text-decoration-none link-secondary" href={`/lots/${game.id}`}>{game.name}</a>
       </div>
       ))}
-      
       <div className="m-2 row">
-          <a className="col-9 text-decoration-none link-secondary" href="/lots/id">Dota 2</a>
-          <a href="/" className="col-6">Аккаунты</a>
-      </div>
-      <div className="m-2 row">
-          <a className="col-9 text-decoration-none link-secondary" href="/lots/id">Lineage</a>
-          <a href="/" className="col-6">Аккаунты</a>
-      </div>
-      <div className="m-2 row">
-          <a className="col-9 text-decoration-none link-secondary" href="/lots/id">Roblox</a>
-          <a href="/" className="col-sm-6">Аккаунты</a>
-          <a href="/" className="col-sm-6">Аккаунты</a>
-          <a href="/" className="col-sm-6">Аккаунты</a>
+          <a className="col-9 text-decoration-none link-secondary" href="/lots/id">Test</a>
+          <a href="/" className="col-sm-6">Test1</a>
+          <a href="/" className="col-sm-6">Test2</a>
+          <a href="/" className="col-sm-6">Test3</a>
       </div>
     </div>
       <Footer></Footer>

@@ -13,6 +13,13 @@ async function getConnection() {
 
 export async function registration(formdata) {
     let connection = await getConnection()
+    let [rows] = await connection.execute(
+        'SELECT * FROM accounts WHERE login = ?', 
+        [formdata.name]
+    )
+    if (rows.length > 0) {
+        return 'Аккаунт с таким названием уже существует!'
+    }
     let hashedPassword = ''
     try {
         hashedPassword = await bcrypt.hash(formdata.password, saltRounds)
@@ -32,9 +39,11 @@ export async function login(formdata) {
     let [rows] = await connection.execute(
         `SELECT password FROM accounts WHERE login = '${formdata.usernameOrEmail}'`
     )
+    if (rows.length === 0) {
+        return 'Неверный логин или пароль!'
+    }
     let hashedPassword = rows[0].password
     let isMatch = await bcrypt.compare(String(password), String(hashedPassword))
-    console.log(isMatch)
     if (isMatch === false) {
         return 'Неверный логин или пароль!'
     } else {
@@ -63,6 +72,13 @@ export async function createCategory(formdata) {
 
 export async function createGame(formdata) {
     let connection = await getConnection()
+    let [rows] = await connection.execute(
+        'SELECT * FROM games WHERE name = ?', 
+        [formdata.name]
+    )
+    if (rows.length > 0) {
+        return 'Игра с таким названием уже существует!'
+    }
     await connection.execute(
         `INSERT INTO games (name, description) VALUES (?, ?)`,
         [formdata.name, formdata.description]

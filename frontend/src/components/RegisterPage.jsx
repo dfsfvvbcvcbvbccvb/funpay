@@ -8,6 +8,7 @@ function RegisterPage() {
     const [login, setLogin] = useState('')
     const [password, setPassword] = useState('')
     const [email, setEmail] = useState('')
+    const [error, setError] = useState('')
     const navigate = useNavigate('')
 
     async function handleFormSubmit(e) {
@@ -23,8 +24,13 @@ function RegisterPage() {
             email: email
         }
 
-        const response = await axios.post('/api/register', formdata);
-        navigate('/')
+        const response = await axios.post('/api/register', formdata)
+        if (response.data !== 'Успешно!') {
+            setError(response.data)
+        }
+        if (response.data === 'Успешно!') {
+            navigate('/')
+        }
     }
 
     return (
@@ -48,6 +54,11 @@ function RegisterPage() {
                         <a href="/account/recover" className="link-primary text-decoration-none mt-2">Забыли пароль?</a>
                     </div>
                     <button type="submit" className="btn btn-primary">Зарегестрироваться</button>
+                    {error && (
+                    <div class="alert alert-danger mt-2">
+                        <h3>{error}</h3>
+                    </div>
+                    )}
                 </div>
             </div>
             </form>
