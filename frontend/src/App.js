@@ -19,7 +19,7 @@ function AppRoutes() {
             <Route path="/account/register" element={<RegisterPage/>}/>
             <Route path="/trade/info" element={<Rules/>}/>
             <Route path="/support" element={<SupportDashboard/>}/>
-            <Route path="/lots" element={<GameInfo/>}/>
+            <Route path="/lots/:id" element={<GameInfo/>}/>
             <Route path="/game/create" element={<CreateGame/>}/>
             <Route path="/category/create" element={<CreateCategory/>}/>
             <Route path="/lots/create" element={<CreateLot/>}/>

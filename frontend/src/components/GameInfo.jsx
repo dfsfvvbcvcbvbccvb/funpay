@@ -1,13 +1,25 @@
 import Navbar from "./Navbar";
 import Footer from "./Footer";
 import axios from "axios";
+import { useParams } from "react-router-dom";
+import { useEffect, useState } from "react";
 
 function GameInfo() {
 
-    async function getGameInfo(id) {
-        let game = await axios.post(`/api/game/${id}`)
-        
-    }
+    let { id } = useParams()
+    const [game, setGame] = useState('')
+
+    useEffect(() => {
+    const loadingGame = async () => {
+      try {
+        let response = await axios.post(`/api/game/${id}`)
+        setGame(response.data)
+      } catch (e) {
+        console.log(e)
+      }
+      }
+      loadingGame()
+    }, [])
 
   return (
     <div className="ms-5 me-5">

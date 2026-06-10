@@ -58,6 +58,21 @@ export async function getGameById(formdata) {
         `SELECT * FROM games WHERE id = ?`,
         [id]
     )
+
+    if (rows.length === 0) {
+        return
+    }
+
+    let categories = await connection.execute(
+        `SELECT categories.id, categories.name 
+         FROM categories
+         INNER JOIN game_categories ON categories.id = game_categories.category_id
+         WHERE game_categories.game_id = ?`,
+        [id]
+    )
+
+    rows[0].categories = categories
+
     return rows
 }
 
@@ -79,10 +94,23 @@ export async function createGame(formdata) {
     if (rows.length > 0) {
         return 'Игра с таким названием уже существует!'
     }
-    await connection.execute(
+    let res = await connection.execute(
         `INSERT INTO games (name, description) VALUES (?, ?)`,
         [formdata.name, formdata.description]
     )
+    let gameId = res.insertId
+
+    let createCategory = await connection.execute(
+        `INSERT INTO categories (name) VALUES (?)`,
+        [formdata.categoryName]
+    )
+    let categoryId = createCategory.insertId
+
+    await connection.query(
+        `INSERT INTO game_categories (game_id, category_id) VALUES ?`,
+        [gameId, categoryId]
+    )
+
     return 'Успешно!'
 }
 
