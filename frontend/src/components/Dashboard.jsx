@@ -12,6 +12,7 @@ function Dashboard() {
       try {
         let response = await axios.post('/api/games')
         setGames(response.data)
+        console.log(response.data)
       } catch (e) {
         console.log(e)
       }
@@ -31,6 +32,9 @@ function Dashboard() {
       {games.map(game => (
         <div className="m-2 row">
           <a className="col-9 text-decoration-none link-secondary" href={`/lots/${game.id}`}>{game.name}</a>
+            {game.categories?.map(category => (
+              <a href={`/lots/${game.id}/category/${category.id}`} key={category.id}>{category.name}</a>
+            ))}
       </div>
       ))}
       <div className="m-2 row">

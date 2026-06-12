@@ -53,7 +53,7 @@ export async function login(formdata) {
 
 export async function getGameById(formdata) {
     let connection = await getConnection()
-    let id = formdata.id
+    let id = formdata
     let [rows] = await connection.execute(
         `SELECT * FROM games WHERE id = ?`,
         [id]
@@ -63,7 +63,7 @@ export async function getGameById(formdata) {
         return
     }
 
-    let categories = await connection.execute(
+    let [categories] = await connection.execute(
         `SELECT categories.id, categories.name 
          FROM categories
          INNER JOIN game_categories ON categories.id = game_categories.category_id
@@ -72,8 +72,7 @@ export async function getGameById(formdata) {
     )
 
     rows[0].categories = categories
-
-    return rows
+    return rows[0]
 }
 
 export async function createCategory(formdata) {
@@ -91,33 +90,67 @@ export async function createGame(formdata) {
         'SELECT * FROM games WHERE name = ?', 
         [formdata.name]
     )
+
     if (rows.length > 0) {
         return 'Игра с таким названием уже существует!'
     }
-    let res = await connection.execute(
+
+    for (let a = 0; a < formdata.categoriesIds.length; a++) {
+        let [result] = await connection.execute(`SELECT * FROM categories WHERE id = ?`,
+            [Number(formdata.categoriesIds[a])]
+        )
+        if (result.length === 0) {
+            return
+        }
+    }
+
+    let [res] = await connection.execute(
         `INSERT INTO games (name, description) VALUES (?, ?)`,
         [formdata.name, formdata.description]
     )
+
     let gameId = res.insertId
 
-    let createCategory = await connection.execute(
-        `INSERT INTO categories (name) VALUES (?)`,
-        [formdata.categoryName]
-    )
-    let categoryId = createCategory.insertId
+    for (let a = 0; a < formdata.categoriesIds.length; a++) {
 
-    await connection.query(
-        `INSERT INTO game_categories (game_id, category_id) VALUES ?`,
-        [gameId, categoryId]
-    )
+        let categoryId = formdata.categoriesIds[a]
+
+        await connection.execute(
+            `INSERT INTO game_categories (game_id, category_id) VALUES (?, ?)`,
+            [gameId, categoryId]
+        )
+    }
 
     return 'Успешно!'
 }
 
 export async function getGames() {
     let connection = await getConnection()
+
     let [rows] = await connection.execute(
         `SELECT * FROM games`
+    )
+
+    for (let a = 0; a < rows.length; a++) {
+        let id = rows[a].id
+
+        let [categories] = await connection.execute(
+            `SELECT categories.id, categories.name 
+            FROM categories
+            LEFT JOIN game_categories ON categories.id = game_categories.category_id
+            WHERE game_categories.game_id = ?`,
+            [id]
+        )
+        rows[a].categories = categories
+    }
+
+    return rows
+}
+
+export async function getCategories() {
+    let connection = await getConnection()
+    let [rows] = await connection.execute(
+        `SELECT * FROM categories`
     )
     return rows
 }

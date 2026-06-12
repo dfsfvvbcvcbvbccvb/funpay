@@ -14,6 +14,7 @@ function GameInfo() {
       try {
         let response = await axios.post(`/api/game/${id}`)
         setGame(response.data)
+        console.log(game)
       } catch (e) {
         console.log(e)
       }
@@ -29,13 +30,12 @@ function GameInfo() {
     </div>
 
     <div>
-      <h1>Minecraft</h1>
-      <p>На бирже FunPay можно купить аккаунт Minecraft напрямую у игрока, при этом мы обеспечим безопасность вашей сделки. Продавец получает оплату только после передачи данных покупателю. Нашим пользователям разрешено продавать аккаунты, полученные только легальным путем.</p>
+      <h1>{game.name}</h1>
+      <p>{game.description}</p>
       <div className="d-flex">
-         <button className="btn btn-primary m-2">Аккаунты</button>
-         <button className="btn btn-primary m-2">Ключи</button>
-         <button className="btn btn-primary m-2">Minecoins</button>
-         <button className="btn btn-primary m-2">Валюта</button>
+        {game.categories?.map(category => (
+          <button key={category.id} className="btn btn-primary m-2">{category.name}</button>
+        ))}
       </div>
     </div>
       <Footer></Footer>
