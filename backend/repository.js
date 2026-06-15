@@ -75,12 +75,36 @@ export async function getGameById(formdata) {
     return rows[0]
 }
 
+export async function getLotById(formdata) {
+    let connection = await getConnection()
+
+    let [rows] = await connection.execute(
+        `SELECT * FROM lots WHERE game_id = ? AND category_id = ? AND id = ?`,
+        [formdata.game_id, formdata.category_id, formdata.lot_id]
+    )
+    console.log(formdata)
+    return rows
+}
+
 export async function createCategory(formdata) {
     let connection = await getConnection()
+
     await connection.execute(
         `INSERT INTO categories (name) VALUES (?)`,
         [formdata.name]
     )
+
+    return 'Успешно!'
+}
+
+export async function createLot(formdata) {
+    let connection = await getConnection()
+    
+    await connection.execute(
+        `INSERT INTO lots (name, description, price, category_id, game_id) VALUES (?, ?, ?, ?, ?)`,
+        [formdata.name, formdata.description, formdata.price, formdata.category_id, formdata.game_id.id]
+    )
+
     return 'Успешно!'
 }
 
@@ -147,11 +171,23 @@ export async function getGames() {
     return rows
 }
 
+export async function getLots(formdata) {
+    let connection = await getConnection()
+
+    let [rows] = await connection.execute(
+        `SELECT * FROM lots WHERE game_id = ? AND category_id = ?`,
+        [Number(formdata.game_id), Number(formdata.category_id)]
+    )
+    return rows
+}
+
 export async function getCategories() {
     let connection = await getConnection()
+
     let [rows] = await connection.execute(
         `SELECT * FROM categories`
     )
+
     return rows
 }
 

@@ -1,6 +1,6 @@
 import express, { response } from 'express';
 import mysql from 'mysql2/promise';
-import { registration, login, getGames, getGameById, createGame, createCategory, getCategories } from './repository.js';
+import { registration, login, getGames, getGameById, createGame, createCategory, getCategories, createLot, getLots, getLotById } from './repository.js';
 const app = express()
 const PORT = 4000
 
@@ -40,6 +40,15 @@ app.post('/api/categories', async (req, res) => {
     res.json(response)
 });
 
+app.post('/api/lots/:gameId/:categoryId', async (req, res) => {
+    let formdata = {
+        game_id: req.params.gameId,
+        category_id: req.params.categoryId
+    }
+    let response = await getLots(formdata)
+    res.json(response)
+});
+
 app.post('/game/create', async (req,res) => {
     if (req.body.name === '' || req.body.description === '') {
         res.json('Заполните все поля!')
@@ -59,6 +68,25 @@ app.post('/category/create', async (req,res) => {
 app.post('/api/game/:id', async (req, res) => {
     let formdata = req.params.id
     let response = await getGameById(formdata)
+    res.json(response)
+});
+
+app.post('/lots/create', async (req,res) => {
+    if (req.body.name === '' || req.body.description === '' || req.body.price === '') {
+        res.json('Заполните все поля!')
+    }
+
+    let response = await createLot(req.body)
+    res.json(response)
+})
+
+app.post('/api/lots/:game_id/:category_id/:lot_id', async (req, res) => {
+    let formdata = {
+        game_id: req.params.game_id,
+        category_id: req.params.category_id,
+        lot_id: req.params.lot_id
+    }
+    let response = await getLotById(formdata)
     res.json(response)
 });
 

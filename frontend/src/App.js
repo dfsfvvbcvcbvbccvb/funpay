@@ -9,6 +9,8 @@ import CreateGame from './components/CreateGame';
 import CreateCategory from './components/CreateCategory';
 import CreateLot from './components/CreateLot';
 import Orders from './components/Orders';
+import CategoriesLots from './components/CategoriesLots';
+import LotInfo from './components/LotInfo';
 
 function AppRoutes() {
 
@@ -22,7 +24,9 @@ function AppRoutes() {
             <Route path="/lots/:id" element={<GameInfo/>}/>
             <Route path="/game/create" element={<CreateGame/>}/>
             <Route path="/category/create" element={<CreateCategory/>}/>
-            <Route path="/lots/create" element={<CreateLot/>}/>
+            <Route path="/lots/create/:id" element={<CreateLot/>}/>
+            <Route path="/lots/:game_id/:category_id" element={<CategoriesLots/>}/>
+            <Route path="/lots/:game_id/:category_id/:lot_id" element={<LotInfo/>}/>
         </Routes>
     )
 }

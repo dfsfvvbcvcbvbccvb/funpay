@@ -20,6 +20,15 @@ export function up(db) {
       name VARCHAR(255) NOT NULL UNIQUE
     );
 
+    CREATE TABLE IF NOT EXISTS lots (
+      id INT PRIMARY KEY AUTO_INCREMENT,
+      name VARCHAR(255) NOT NULL,
+      description VARCHAR(255) NOT NULL,
+      price INT,
+      category_id INT,
+      game_id INT
+    );
+
     CREATE TABLE IF NOT EXISTS game_categories (
       game_id INT,
       category_id INT,
