@@ -15,7 +15,7 @@ export async function registration(formdata) {
     let connection = await getConnection()
     let [rows] = await connection.execute(
         'SELECT * FROM accounts WHERE login = ?', 
-        [formdata.name]
+        [formdata.login]
     )
     if (rows.length > 0) {
         return 'Аккаунт с таким названием уже существует!'
@@ -30,14 +30,14 @@ export async function registration(formdata) {
             'INSERT INTO accounts (login, password, email) VALUES (?, ?, ?)',
             [formdata.login, hashedPassword, formdata.email]
         )
-    return 'Успешно'
+    return 'Успешно!'
 }
 
 export async function login(formdata) {
     let connection = await getConnection()
     let password = formdata.password
     let [rows] = await connection.execute(
-        `SELECT password FROM accounts WHERE login = '${formdata.usernameOrEmail}'`
+        `SELECT password, id FROM accounts WHERE login = '${formdata.usernameOrEmail}'`
     )
     if (rows.length === 0) {
         return 'Неверный логин или пароль!'
@@ -47,8 +47,32 @@ export async function login(formdata) {
     if (isMatch === false) {
         return 'Неверный логин или пароль!'
     } else {
-        return 'Успешно!'
+        return {
+            res: 'Успешно!',
+            userId: rows[0].id
+        }
     }
+}
+
+export async function getBalanceByUserId(formdata) {
+    let connection = await getConnection()
+    
+    let [rows] = await connection.execute(
+        `SELECT balance FROM accounts WHERE id = ?`,
+        [formdata]
+    )
+
+    return rows
+}
+
+export async function getUserById(formdata) {
+    let connection = await getConnection()
+    let id = formdata
+    let [rows] = await connection.execute(
+        `SELECT login FROM accounts WHERE id = ?`,
+        [id]
+    )
+    return rows
 }
 
 export async function getGameById(formdata) {
@@ -73,39 +97,6 @@ export async function getGameById(formdata) {
 
     rows[0].categories = categories
     return rows[0]
-}
-
-export async function getLotById(formdata) {
-    let connection = await getConnection()
-
-    let [rows] = await connection.execute(
-        `SELECT * FROM lots WHERE game_id = ? AND category_id = ? AND id = ?`,
-        [formdata.game_id, formdata.category_id, formdata.lot_id]
-    )
-    console.log(formdata)
-    return rows
-}
-
-export async function createCategory(formdata) {
-    let connection = await getConnection()
-
-    await connection.execute(
-        `INSERT INTO categories (name) VALUES (?)`,
-        [formdata.name]
-    )
-
-    return 'Успешно!'
-}
-
-export async function createLot(formdata) {
-    let connection = await getConnection()
-    
-    await connection.execute(
-        `INSERT INTO lots (name, description, price, category_id, game_id) VALUES (?, ?, ?, ?, ?)`,
-        [formdata.name, formdata.description, formdata.price, formdata.category_id, formdata.game_id.id]
-    )
-
-    return 'Успешно!'
 }
 
 export async function createGame(formdata) {
@@ -171,6 +162,27 @@ export async function getGames() {
     return rows
 }
 
+export async function getLotById(formdata) {
+    let connection = await getConnection()
+
+    let [rows] = await connection.execute(
+        `SELECT * FROM lots WHERE game_id = ? AND category_id = ? AND id = ?`,
+        [formdata.game_id, formdata.category_id, formdata.lot_id]
+    )
+    return rows
+}
+
+export async function createLot(formdata) {
+    let connection = await getConnection()
+    
+    await connection.execute(
+        `INSERT INTO lots (name, description, price, category_id, game_id, ownerUsername, ownerId) VALUES (?, ?, ?, ?, ?, ?, ?)`,
+        [formdata.name, formdata.description, formdata.price, formdata.category_id, formdata.game_id.id, formdata.ownerUsername, formdata.ownerId]
+    )
+
+    return 'Успешно!'
+}
+
 export async function getLots(formdata) {
     let connection = await getConnection()
 
@@ -179,6 +191,37 @@ export async function getLots(formdata) {
         [Number(formdata.game_id), Number(formdata.category_id)]
     )
     return rows
+}
+
+export async function getLotsByUserId(formdata) {
+    let connection = await getConnection()
+
+    let [rows] = await connection.execute(
+        `SELECT id, name, price, ownerUsername, game_id, category_id FROM lots WHERE ownerId = ?`,
+        [formdata]
+    )
+    return rows
+}
+
+export async function getCategoryById(formdata) {
+    let connection = await getConnection()
+    let id = formdata
+    let [rows] = await connection.execute(
+        `SELECT name FROM categories WHERE id = ?`,
+        [id]
+    )
+    return rows
+}
+
+export async function createCategory(formdata) {
+    let connection = await getConnection()
+
+    await connection.execute(
+        `INSERT INTO categories (name) VALUES (?)`,
+        [formdata.name]
+    )
+
+    return 'Успешно!'
 }
 
 export async function getCategories() {
@@ -191,3 +234,13 @@ export async function getCategories() {
     return rows
 }
 
+export async function getOrdersByUserId(formdata) {
+    let connection = await getConnection()
+
+    let [rows] = await connection.execute(
+        `SELECT * FROM orders WHERE buyerId = ?`,
+        [formdata]
+    )
+
+    return rows
+}

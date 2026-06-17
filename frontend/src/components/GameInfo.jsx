@@ -35,8 +35,8 @@ function GameInfo() {
     </div>
 
     <div>
-      <h1>{game.name}</h1>
-      <p>{game.description}</p>
+      <h1>Игра {game.name}</h1>
+      <h4>{game.description}</h4>
       <div className="d-flex">
         {game.categories?.map(category => (
           <a key={category.id} href={`/lots/${game.id}/${category.id}`} className="btn btn-primary m-2">{category.name}</a>

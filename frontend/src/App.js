@@ -11,6 +11,8 @@ import CreateLot from './components/CreateLot';
 import Orders from './components/Orders';
 import CategoriesLots from './components/CategoriesLots';
 import LotInfo from './components/LotInfo';
+import Profile from './components/Profile';
+import Balance from './components/Balance';
 
 function AppRoutes() {
 
@@ -27,6 +29,8 @@ function AppRoutes() {
             <Route path="/lots/create/:id" element={<CreateLot/>}/>
             <Route path="/lots/:game_id/:category_id" element={<CategoriesLots/>}/>
             <Route path="/lots/:game_id/:category_id/:lot_id" element={<LotInfo/>}/>
+            <Route path="/accounts/profile/:id" element={<Profile/>}/>
+            <Route path="/account/balance" element={<Balance/>}/>
         </Routes>
     )
 }

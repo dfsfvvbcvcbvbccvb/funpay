@@ -28,13 +28,14 @@ function LoginPage() {
 
         try {
             res = await axios.post('/api/login', formdata)
-            if (res.data !== 'Успешно!') {
+            if (res.data.res !== 'Успешно!') {
                 setError(res.data)
                 return
             }
-            if (res.data === 'Успешно!') {
+            if (res.data.res === 'Успешно!') {
                 navigate('/')
                 localStorage.setItem('loginned', true)
+                localStorage.setItem('userId', res.data.userId)
             }
         } catch (error) {
             console.log(error)

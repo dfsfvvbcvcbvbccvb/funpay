@@ -31,6 +31,10 @@ function CreateLot() {
             return
         }
 
+        let id = localStorage.getItem('userId')
+        let res2 = await axios.post(`/api/user/${id}`)
+        console.log(id)
+
         let formdata = {
             name: name,
             description: description,
@@ -38,7 +42,9 @@ function CreateLot() {
             englishDescription: englishDescription,
             price: price,
             category_id: category,
-            game_id: gameId
+            game_id: gameId,
+            ownerUsername: res2.data[0].login,
+            ownerId: id
         }
 
         let res = await axios.post('/lots/create', formdata)
@@ -86,7 +92,7 @@ function CreateLot() {
                 <div>
                     <input className="form-control form-control-lg m-2" onChange={(e) => setName(e.target.value)} type="text" placeholder="Name" aria-label=".form-control-lg example" required></input>
                     <input className="form-control m-2" type="text" onChange={(e) => setDescription(e.target.value)} placeholder="Description" aria-label="default input example" required></input>
-                    <input className="form-control m-2" type="text" onChange={(e) => setPrice(e.target.value)} placeholder="Price" aria-label="default input example" required></input>
+                    <input className="form-control m-2" type="number" onChange={(e) => setPrice(e.target.value)} placeholder="Price" aria-label="default input example" required></input>
                     <label>Категория</label>
                     <select className="form-select form-select mb-2" onChange={handleChange}>
                     {categories && categories.map(category => (

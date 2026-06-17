@@ -5,7 +5,8 @@ export function up(db) {
       login VARCHAR(255) NOT NULL UNIQUE,
       password VARCHAR(255) NOT NULL,
       email VARCHAR(255) NOT NULL UNIQUE,
-      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      balance INT
     );
 
     CREATE TABLE IF NOT EXISTS games (
@@ -26,7 +27,18 @@ export function up(db) {
       description VARCHAR(255) NOT NULL,
       price INT,
       category_id INT,
-      game_id INT
+      game_id INT,
+      ownerUsername VARCHAR(255) NOT NULL,
+      ownerId INT
+    );
+
+    CREATE TABLE IF NOT EXISTS orders (
+      id INT PRIMARY KEY AUTO_INCREMENT,
+      amount INT,
+      category_id INT,
+      game_id INT,
+      buyerId INT,
+      sellerId INT
     );
 
     CREATE TABLE IF NOT EXISTS game_categories (

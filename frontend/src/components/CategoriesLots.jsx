@@ -32,12 +32,35 @@ function CategoriesLots() {
         <div>
         <Navbar></Navbar>
         </div>
-        <h1>{game.name}</h1>
-        <p>{game.description}</p>
+        <h1>Игра {game.name}</h1>
+        <h4>{game.description}</h4>
         <div className="d-flex flex-column w-25">
-        {lots.map(lot => (
-            <a href={`/lots/${game.id}/${params.category_id}/${lot.id}`} className="btn btn-primary mt-3">{lot.name} {lot.price}</a>
-        ))}
+        <table class="table">
+          <thead className="table-dark">
+            <tr>
+              <th scope="col">Описание</th>
+              <th scope="col">Продавец</th>
+              <th scope="col">Цена</th>
+            </tr>
+          </thead>
+          <tbody>
+            {lots.map(lot => (
+            <tr>
+              <td className="position-relative">
+              <a className="stretched-link fs-3 text-decoration-none link-secondary" href={`/lots/${game.id}/${params.category_id}/${lot.id}`}><td>{lot.name}</td></a>
+              </td>
+              <td className="position-relative">
+              <a className="stretched-link fs-3 text-decoration-none link-secondary" href={`/lots/${game.id}/${params.category_id}/${lot.id}`}><td>{lot.ownerUsername}</td></a>
+              </td>
+              <td className="position-relative">
+              <a className="stretched-link fs-3 text-decoration-none link-secondary" href={`/lots/${game.id}/${params.category_id}/${lot.id}`}><td>{lot.price}</td></a>
+              </td>
+              
+            </tr>
+            ))}
+          </tbody>
+        </table>
+        
         </div>
         <Footer></Footer>
         </div>

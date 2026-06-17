@@ -6,6 +6,7 @@ function Navbar() {
 
     let loginned = Boolean(localStorage.getItem('loginned'))
     let language = localStorage.getItem('language')
+    let userId = localStorage.getItem('userId')
 
 
     function changeValue(value) {
@@ -15,6 +16,7 @@ function Navbar() {
 
     function logout() {
         localStorage.removeItem('loginned')
+        localStorage.removeItem('userId')
         return
     }
 
@@ -56,7 +58,7 @@ function Navbar() {
                         <a className='text-decoration-none link-secondary me-2' href='/orders/trade'>Продажи</a>
                         <a className='text-decoration-none link-secondary me-2' href='/chat'>Сообщения</a>
                         <a className='text-decoration-none link-secondary me-2' href='/account/balance'>Финансы</a>
-                        <a className='text-decoration-none link-secondary me-2' href='/account/balance'>Профиль</a>
+                        <a className='text-decoration-none link-secondary me-2' href={`/accounts/profile/${userId}`}>Профиль</a>
                         <a className='text-decoration-none link-secondary me-2' onClick={logout} href='/'>Выход</a>
                         </>
                         ) : (
