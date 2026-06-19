@@ -1,6 +1,6 @@
 import express, { response } from 'express';
 import mysql from 'mysql2/promise';
-import { registration, login, getGames, getGameById, createGame, createCategory, getCategories, createLot, getLots, getLotById, getUserById, getCategoryById, getLotsByUserId, getBalanceByUserId, getOrdersByUserId } from './repository.js';
+import { registration, login, getGames, getGameById, createGame, createCategory, getCategories, createLot, getLots, getLotById, getUserById, getCategoryById, getLotsByUserId, getBalanceByUserId, getOrdersByUserId, buyOrder, sendMessage, getMessages } from './repository.js';
 const app = express()
 const PORT = 4000
 
@@ -94,7 +94,26 @@ app.post('/lots/create', async (req,res) => {
 
     let response = await createLot(req.body)
     res.json(response)
-})
+});
+
+app.post('/api/orders/buy', async (req, res) => {
+    let formdata = {
+        lotId: req.body.lotId,
+        price: req.body.price,
+        game_id: req.body.game_id,
+        category_id: req.body.category_id,
+        userId: req.body.userId,
+        sellerId: req.body.sellerId
+    }
+    let response = await buyOrder(formdata)
+    res.json(response)
+});
+
+app.post('/api/lots/user/:id', async (req, res) => {
+    let formdata = req.params.id
+    let response = await getLotsByUserId(formdata)
+    res.json(response)
+});
 
 app.post('/api/lots/:game_id/:category_id/:lot_id', async (req, res) => {
     let formdata = {
@@ -117,17 +136,29 @@ app.post('/api/lots/:gameId/:categoryId', async (req, res) => {
     res.json(response)
 });
 
-app.post('/api/lots/user/:id', async (req, res) => {
-    let formdata = req.params.id
-
-    let response = await getLotsByUserId(formdata)
-    res.json(response)
-});
-
 app.post('/api/orders/:id', async (req, res) => {
     let formdata = req.params.id
 
     let response = await getOrdersByUserId(formdata)
+    res.json(response)
+});
+app.post('/api/messages/sender/:id1/receiver/:id2', async (req, res) => {
+    let formdata = {
+        senderId: req.params.id1,
+        receiverId: req.params.id2,
+        content: req.body.content
+    }
+
+    let response = await sendMessage(formdata)
+    res.json(response)
+});
+
+app.post('/api/getMessages/sender/:id1/receiver/:id2', async (req,res) => {
+    let formdata = {
+        senderId: req.params.id1,
+        receiverId: req.params.id2,
+    }
+    let response = await getMessages(formdata)
     res.json(response)
 });
 

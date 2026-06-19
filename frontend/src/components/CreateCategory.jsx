@@ -2,7 +2,7 @@ import Navbar from "./Navbar"
 import Footer from "./Footer"
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 function CreateCategory() {
 
@@ -15,7 +15,8 @@ function CreateCategory() {
         e.preventDefault()
         let formdata = {
             name: name,
-            description: description
+            description: description,
+            creatorId: localStorage.getItem('userId')
         }
         let response = await axios.post('/category/create', formdata)
         if (response.data !== 'Успешно!') {
@@ -26,6 +27,21 @@ function CreateCategory() {
             navigate('/')
         }
     }
+
+    useEffect(() => {
+        const loadingInformation = async () => {
+        try {
+            let id = localStorage.getItem('userId')
+            let response = await axios.post(`/api/user/${id}`)
+            if (response.data[0].admin !== 'true') {
+                navigate('/')
+            }
+        } catch (e) {
+            console.log(e)
+        }
+        }
+        loadingInformation()
+    }, [])
 
     return (
     <div className="container">

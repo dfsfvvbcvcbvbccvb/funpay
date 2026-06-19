@@ -18,7 +18,8 @@ function CreateGame() {
         let formdata = {
             name: name,
             description: description,
-            categoriesIds: categoriesId
+            categoriesIds: categoriesId,
+            creatorId: localStorage.getItem('userId')
         }
         let response = await axios.post('/game/create', formdata)
         if (response.data !== 'Успешно!') {
@@ -29,6 +30,21 @@ function CreateGame() {
             navigate('/')
         }
     }
+
+    useEffect(() => {
+        const loadingInformation = async () => {
+        try {
+            let id = localStorage.getItem('userId')
+            let response = await axios.post(`/api/user/${id}`)
+            if (response.data[0].admin !== 'true') {
+                navigate('/')
+            }
+        } catch (e) {
+            console.log(e)
+        }
+        }
+        loadingInformation()
+    }, [])
 
     async function handleChange(e) {
         let values = Array.from(e.target.selectedOptions, (option) => option.value)

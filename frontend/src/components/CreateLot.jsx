@@ -33,7 +33,6 @@ function CreateLot() {
 
         let id = localStorage.getItem('userId')
         let res2 = await axios.post(`/api/user/${id}`)
-        console.log(id)
 
         let formdata = {
             name: name,
@@ -53,24 +52,18 @@ function CreateLot() {
             navigate('/')
         }
     }
-    
-    //function changeInputs(value) {
-        //if (value === 'ru') {
-           // setEnglish(false)
-        //}
-        //if (value === 'en') {
-            //setEnglish(true)
-        //}
-   //}
 
     useEffect(() => {
     const loadingCategories = async () => {
       try {
-        let response = await axios.post('/api/categories')
-        let response2 = await axios.post(`/api/game/${gameId.id}`)
-        setCategories(response.data)
-        setGame(response2.data)
-        console.log(response2)
+        let id = localStorage.getItem('userId')
+        let response = await axios.post(`/api/game/${gameId.id}`)
+        let response2 = await axios.post(`/api/user/${id}`)
+        if (response2.data[0].trustedSeller !== 'true') {
+            navigate('/seller/test')
+            return
+        }
+        setGame(response.data)
       } catch (e) {
         console.log(e)
       }
@@ -95,7 +88,7 @@ function CreateLot() {
                     <input className="form-control m-2" type="number" onChange={(e) => setPrice(e.target.value)} placeholder="Price" aria-label="default input example" required></input>
                     <label>Категория</label>
                     <select className="form-select form-select mb-2" onChange={handleChange}>
-                    {categories && categories.map(category => (
+                    {game.categories && game.categories.map(category => (
                         <option key={category.id} value={category.id}>{category.name}</option>
                     ))}
                 </select>

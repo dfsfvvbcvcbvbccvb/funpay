@@ -13,9 +13,8 @@ function Profile() {
     useEffect(() => {
     const loadingProfile = async () => {
       try {
-        console.log(id.id)
-        let response = await axios.post(`/api/user/${id.id}`)
         let response2 = await axios.post(`/api/lots/user/${id.id}`)
+        let response = await axios.post(`/api/user/${id.id}`)
         setUser(response.data)
         setLots(response2.data)
       } catch (e) {

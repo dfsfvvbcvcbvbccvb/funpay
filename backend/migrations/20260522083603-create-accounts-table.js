@@ -6,7 +6,9 @@ export function up(db) {
       password VARCHAR(255) NOT NULL,
       email VARCHAR(255) NOT NULL UNIQUE,
       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-      balance INT
+      balance INT,
+      trustedSeller VARCHAR(255) NOT NULL,
+      admin VARCHAR(255) NOT NULL
     );
 
     CREATE TABLE IF NOT EXISTS games (
@@ -39,6 +41,15 @@ export function up(db) {
       game_id INT,
       buyerId INT,
       sellerId INT
+    );
+
+    CREATE TABLE IF NOT EXISTS messages (
+      id INT PRIMARY KEY AUTO_INCREMENT,
+      senderId INT,
+      receiverId INT,
+      content VARCHAR(255) NOT NULL,
+      senderUsername VARCHAR(255) NOT NULL,
+      receiverUsername VARCHAR(255) NOT NULL
     );
 
     CREATE TABLE IF NOT EXISTS game_categories (
