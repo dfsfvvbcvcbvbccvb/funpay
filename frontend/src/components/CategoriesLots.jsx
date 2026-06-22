@@ -35,7 +35,7 @@ function CategoriesLots() {
         <h1>Игра {game.name}</h1>
         <h4>{game.description}</h4>
         <div className="d-flex flex-column w-25">
-        <table class="table">
+        <table className="table">
           <thead className="table-dark">
             <tr>
               <th scope="col">Описание</th>
@@ -45,7 +45,7 @@ function CategoriesLots() {
           </thead>
           <tbody>
             {lots.map(lot => (
-            <tr>
+            <tr key={lot.id}>
               <td className="position-relative">
               <a className="stretched-link fs-3 text-decoration-none link-secondary" href={`/lots/${game.id}/${params.category_id}/${lot.id}`}><td>{lot.name}</td></a>
               </td>

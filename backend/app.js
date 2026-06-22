@@ -1,6 +1,6 @@
 import express, { response } from 'express';
 import mysql from 'mysql2/promise';
-import { registration, login, getGames, getGameById, createGame, createCategory, getCategories, createLot, getLots, getLotById, getUserById, getCategoryById, getLotsByUserId, getBalanceByUserId, getOrdersByUserId, buyOrder, sendMessage, getMessages } from './repository.js';
+import { registration, login, getGames, getGameById, createGame, createCategory, getCategories, createLot, getLots, getLotById, getUserById, getCategoryById, getLotsByUserId, getBalanceByUserId, getOrdersByUserId, buyOrder, sendMessage, getMessages, trustSellerCheck, getFinancesByUserId, getSalesByUserId, confirmLot } from './repository.js';
 const app = express()
 const PORT = 4000
 
@@ -79,6 +79,16 @@ app.post('/api/game/:id', async (req, res) => {
     let formdata = req.params.id
 
     let response = await getGameById(formdata)
+    res.json(response)
+});
+
+app.post('/api/lots/confirm/:id/:userId', async (req,res) => {
+    let formdata = {
+        lotId: Number(req.params.id),
+        userId: Number(req.params.userId)
+    }
+    console.log(formdata)
+    let response = await confirmLot(formdata)
     res.json(response)
 });
 
@@ -161,6 +171,25 @@ app.post('/api/getMessages/sender/:id1/receiver/:id2', async (req,res) => {
     let response = await getMessages(formdata)
     res.json(response)
 });
+
+app.post('/api/seller/check', async (req,res) => {
+    let formdata = req.body
+    let response = await trustSellerCheck(formdata)
+    res.json(response)
+});
+
+app.post('/api/finances/:id', async (req,res) => {
+    let formdata = req.params.id
+    let response = await getFinancesByUserId(formdata)
+    res.json(response)
+});
+
+app.post('/api/sales/:id', async (req,res) => {
+    let formdata = req.params.id
+    let response = await getSalesByUserId(formdata)
+    res.json(response)
+});
+
 
 app.listen(PORT, () => {
   console.log(`Сервер запущен на http://localhost:${PORT}`)

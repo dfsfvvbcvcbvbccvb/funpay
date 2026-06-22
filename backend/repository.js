@@ -199,8 +199,40 @@ export async function createLot(formdata) {
     }
 
     await connection.execute(
-        `INSERT INTO lots (name, description, price, category_id, game_id, ownerUsername, ownerId) VALUES (?, ?, ?, ?, ?, ?, ?)`,
-        [formdata.name, formdata.description, formdata.price, formdata.category_id, formdata.game_id.id, formdata.ownerUsername, formdata.ownerId]
+        `INSERT INTO lots (name, description, price, category_id, game_id, ownerUsername, ownerId, confirmation, confirmed, buyerId) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        [formdata.name, formdata.description, formdata.price, formdata.category_id, formdata.game_id.id, formdata.ownerUsername, formdata.ownerId, 'false', 'false', '0']
+    )
+   
+
+    return 'Успешно!'
+}
+
+export async function confirmLot(formdata) {
+    let connection = await getConnection()
+
+    await connection.execute(
+        `UPDATE lots SET confirmed='true' WHERE id = ?`,
+        [formdata.lotId]
+    )
+    let [rows] = await connection.execute(
+        `SELECT * FROM lots WHERE id = ?`,
+        [formdata.lotId]
+    )
+
+    await connection.execute(`
+    INSERT INTO orders (amount, category_id, game_id, buyerId, sellerId) VALUES (?, ?, ?, ?, ?)`,
+    [rows[0].price, rows[0].category_id, rows[0].game_id, formdata.userId, rows[0].ownerId])
+    await connection.execute(
+        `DELETE FROM lots WHERE id = ${rows[0].id}`
+    )
+    let [rows2] = await connection.execute(
+        `SELECT balance FROM accounts WHERE id = ?`,
+        rows[0].ownerId
+    )
+    let newBalance = Number(rows2[0].balance) + Number(rows[0].price)
+    await connection.execute(
+        `UPDATE accounts SET balance=${newBalance} WHERE id = ?`,
+        rows[0].ownerId
     )
 
     return 'Успешно!'
@@ -279,6 +311,28 @@ export async function getOrdersByUserId(formdata) {
     return rows
 }
 
+export async function getFinancesByUserId(formdata) {
+    let connection = await getConnection()
+
+    let [rows] = await connection.execute(
+        `SELECT * FROM orders WHERE buyerId = ? OR sellerId = ?`,
+        [formdata, formdata]
+    )
+
+    return rows
+}
+
+export async function getSalesByUserId(formdata) {
+    let connection = await getConnection()
+
+    let [rows] = await connection.execute(
+        `SELECT * FROM orders WHERE sellerId = ?`,
+        [formdata, formdata]
+    )
+
+    return rows
+}
+
 export async function buyOrder(formdata) {
     let connection = await getConnection()
 
@@ -295,13 +349,11 @@ export async function buyOrder(formdata) {
     if (rows[0].balance >= formdata.price) {
        let newBalance = rows[0].balance - formdata.price
        await connection.execute(`UPDATE accounts SET balance=${newBalance} WHERE id = ${formdata.userId}`)
-       await connection.execute(`
-        INSERT INTO orders (amount, category_id, game_id, buyerId, sellerId) VALUES (?, ?, ?, ?, ?)`,
-        [formdata.price, formdata.category_id, formdata.game_id, formdata.userId, formdata.sellerId])
-        await connection.execute(
-            `DELETE FROM lots WHERE id = ${formdata.lotId}`
-        )
-        return 'Успешно!'
+       await connection.execute(
+        `UPDATE lots SET confirmation='true' WHERE id = ?`,
+        [formdata.lotId]
+       )
+       return 'Успешно!'
     }
 }
 
@@ -337,4 +389,13 @@ export async function getMessages(formdata) {
         [formdata.senderId, formdata.receiverId]
     )
     return rows
+}
+
+export async function trustSellerCheck(formdata) {
+    let connection = await getConnection()
+    await connection.execute(
+        `UPDATE accounts SET trustedSeller='true' WHERE id = ?`,
+        [formdata.userId]
+    )
+    return 'Успешно!'
 }

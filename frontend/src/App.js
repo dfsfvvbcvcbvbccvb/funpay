@@ -14,6 +14,7 @@ import Profile from './components/Profile';
 import Balance from './components/Balance';
 import Orders from './components/Orders';
 import SellerTest from './components/SellerTest';
+import Sales from './components/Sales';
 
 function AppRoutes() {
 
@@ -34,6 +35,7 @@ function AppRoutes() {
             <Route path="/account/balance" element={<Balance/>}/>
             <Route path="/orders" element={<Orders/>}/>
             <Route path="/seller/test" element={<SellerTest/>}/>
+            <Route path="/orders/trade" element={<Sales/>}/>
         </Routes>
     )
 }

@@ -8,6 +8,7 @@ import { useNavigate } from "react-router-dom"
 function LotInfo() {
 
     const [lot, setLot] = useState('')
+    const [confirmation, setConfirmation] = useState('')
     const params = useParams()
     const navigate = useNavigate('')
     const [error, setError] = useState('')
@@ -19,6 +20,13 @@ function LotInfo() {
         try {
             let id = localStorage.getItem('userId')
             let response = await axios.post(`/api/lots/${params.game_id}/${params.category_id}/${params.lot_id}`)
+            console.log(response.data)
+            if (response.data[0].confirmation === "true") {
+              setConfirmation(true)
+            } else {
+              setConfirmation(false)
+            }
+            
             setLot(response.data)
             let id2 = lot[0]?.ownerId
             let response2 = await axios.post(`/api/getMessages/sender/${id}/receiver/${id2}`)
@@ -29,6 +37,12 @@ function LotInfo() {
         }
         loadingLot()
     }, [])
+
+
+    async function handleConfirmOrder() {
+      let formdata = localStorage.getItem('userId')
+      let response = await axios.post(`/api/lots/confirm/${lot[0].id}/${formdata}`)
+    }
 
     async function handleBuy() {
       let formdata = {
@@ -85,16 +99,22 @@ function LotInfo() {
         <label>Цена</label>
         <p>{lot[0]?.price}</p>
       </div>
-      <button onClick={handleBuy} className="btn btn-primary mt-2">Купить</button>
+      {confirmation ? (
+        <button onClick={handleConfirmOrder} className="btn btn-primary mt-2">Подтвердить успешное выполнение заказа</button>
+       ) : (
+        <button onClick={handleBuy} className="btn btn-primary mt-2">Купить</button>
+       )}
       <div>
+        <div className="d-flex flex-column">
         {messages.map(message => (
           <span className="mt-2 mb-2">Отправитель: {message.senderUsername} Содержимое: {message.content}</span>
         ))}
+        </div>
         <input onChange={(e) => setContent(e.target.value)} type="text" className="form-control mt-2" placeholder="Контент"></input>
-        <button onClick={handleSendMessage}>Отправить</button>
+        <button className="mt-2 mb-2 btn btn-outline-primary" onClick={handleSendMessage}>Отправить</button>
       </div>
           {error && (
-            <div class="alert alert-danger mt-2">
+            <div className="alert alert-danger mt-2">
                 <h3>{error}</h3>
             </div>
           )}

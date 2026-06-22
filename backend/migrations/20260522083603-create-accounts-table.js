@@ -31,7 +31,9 @@ export function up(db) {
       category_id INT,
       game_id INT,
       ownerUsername VARCHAR(255) NOT NULL,
-      ownerId INT
+      ownerId INT,
+      confirmation VARCHAR(255) NOT NULL,
+      confirmed VARCHAR(255) NOT NULL
     );
 
     CREATE TABLE IF NOT EXISTS orders (

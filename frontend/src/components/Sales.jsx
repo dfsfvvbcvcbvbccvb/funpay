@@ -5,21 +5,21 @@ import { useNavigate } from "react-router-dom";
 import Footer from "./Footer";
 import { useEffect } from "react";
 
-function Orders() {
+function Sales() {
 
-    const [orders, setOrders] = useState([])
+    const [sales, setSales] = useState([])
 
     useEffect(() => {
-    const loadingOrders = async () => {
+    const loadingSales = async () => {
       try {
         let id = localStorage.getItem('userId')
-        let response = await axios.post(`/api/orders/${id}`)
-        setOrders(response.data)
+        let response = await axios.post(`/api/sales/${id}`)
+        setSales(response.data)
       } catch (e) {
         console.log(e)
       }
     }
-        loadingOrders()
+        loadingSales()
     }, [])
 
     return (
@@ -40,13 +40,13 @@ function Orders() {
                                 </tr>
                             </thead>
                             <tbody>
-                                {orders.map(order => (
-                                <tr key={order.id}>
+                                {sales.map(sale => (
+                                <tr key={sale.id}>
                                 <td className="position-relative">
-                                <a className="stretched-link fs-3 text-decoration-none link-secondary"><td>Заказ: {order.id}</td></a>
+                                <a className="stretched-link fs-3 text-decoration-none link-secondary"><td>Заказ: {sale.id}</td></a>
                                 </td>
                                 <td className="position-relative">
-                                <a className="stretched-link fs-3 text-decoration-none link-secondary"><td className="text-danger">-{order.amount}</td></a>
+                                <a className="stretched-link fs-3 text-decoration-none link-secondary"><td className="text-success">+{sale.amount}</td></a>
                                 </td>
                                 </tr>
                                 ))}
@@ -60,4 +60,4 @@ function Orders() {
         </div>
     )
 }
-export default Orders;
+export default Sales;

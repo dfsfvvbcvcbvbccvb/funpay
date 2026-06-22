@@ -58,6 +58,7 @@ function CreateLot() {
       try {
         let id = localStorage.getItem('userId')
         let response = await axios.post(`/api/game/${gameId.id}`)
+        setCategory(response.data.categories[0].id)
         let response2 = await axios.post(`/api/user/${id}`)
         if (response2.data[0].trustedSeller !== 'true') {
             navigate('/seller/test')
