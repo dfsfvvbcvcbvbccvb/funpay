@@ -36,6 +36,23 @@ export function up(db) {
       confirmed VARCHAR(255) NOT NULL
     );
 
+     CREATE TABLE IF NOT EXISTS tickets (
+      id INT PRIMARY KEY AUTO_INCREMENT,
+      content VARCHAR(255) NOT NULL,
+      login VARCHAR(255) NOT NULL,
+      problem VARCHAR(255) NOT NULL,
+      senderId INT,
+      status VARCHAR(255) NOT NULL
+    );
+
+    CREATE TABLE IF NOT EXISTS supportMessages (
+      id INT PRIMARY KEY AUTO_INCREMENT,
+      content VARCHAR(255) NOT NULL,
+      senderId INT,
+      ticketId INT,
+      senderUsername VARCHAR(255) NOT NULL
+    );
+
     CREATE TABLE IF NOT EXISTS orders (
       id INT PRIMARY KEY AUTO_INCREMENT,
       amount INT,

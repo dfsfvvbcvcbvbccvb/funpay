@@ -15,6 +15,9 @@ import Balance from './components/Balance';
 import Orders from './components/Orders';
 import SellerTest from './components/SellerTest';
 import Sales from './components/Sales';
+import SupportCreateTicket from './components/support/SupportCreateTicket';
+import SupportTickets from './components/support/SupportTickets';
+import SupportTicketInfo from './components/support/SupportTicketInfo';
 
 function AppRoutes() {
 
@@ -36,6 +39,9 @@ function AppRoutes() {
             <Route path="/orders" element={<Orders/>}/>
             <Route path="/seller/test" element={<SellerTest/>}/>
             <Route path="/orders/trade" element={<Sales/>}/>
+            <Route path="/support/create" element={<SupportCreateTicket/>}/>
+            <Route path="/support/tickets" element={<SupportTickets/>}/>
+            <Route path="/support/ticket/:id" element={<SupportTicketInfo/>}/>
         </Routes>
     )
 }

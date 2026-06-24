@@ -399,3 +399,89 @@ export async function trustSellerCheck(formdata) {
     )
     return 'Успешно!'
 }
+
+export async function createTicket(formdata) {
+    let connection = await getConnection()
+    await connection.execute(
+        `INSERT INTO tickets (content, login, problem, senderId, status) VALUES (?, ?, ?, ?, ?)`,
+        [formdata.content, formdata.login, formdata.problem, formdata.senderId, 'approval']
+    )
+    return 'Успешно!'
+}
+
+export async function getTicketsByUserId(formdata) {
+    let connection = await getConnection()
+
+    let [rows] = await connection.execute(
+        `SELECT * FROM tickets WHERE senderId = ?`,
+        [formdata]
+    )
+
+    return rows
+}
+
+export async function getTicketInfo(formdata) {
+    let connection = await getConnection()
+
+    let [rows] = await connection.execute(
+        `SELECT * FROM tickets WHERE id = ?`,
+        [formdata]
+    )
+
+    return rows
+}
+
+export async function sendSupportMessage(formdata) {
+    let connection = await getConnection()
+
+    let [rows] = await connection.execute(
+        `SELECT login FROM accounts WHERE id = ?`,
+        [formdata.senderId]
+    )
+
+    await connection.execute(
+        `INSERT INTO supportMessages (content, senderId, ticketId, senderUsername) VALUES (?, ?, ?, ?)`,
+        [formdata.content, formdata.senderId, formdata.ticketId, rows[0].login]
+    )
+    return 'Успешно!'
+}
+
+export async function getSupportMessages(formdata) {
+    let connection = await getConnection()
+
+    let [rows] = await connection.execute(
+        `SELECT * FROM supportMessages WHERE ticketId = ?`,
+        [formdata]
+    )
+
+    return rows
+}
+
+export async function changeSupportTicketStatus(formdata) {
+    let connection = await getConnection()
+
+    await connection.execute(
+        `UPDATE tickets SET status=? WHERE id = ?`,
+        [formdata.status, formdata.ticketId]
+    )
+    
+    return 'Успешно!'
+}
+
+export async function deleteTicket(formdata) {
+    let connection = await getConnection()
+
+    let [rows] = await connection.execute(
+        `SELECT admin FROM accounts WHERE id = ?`,
+        [formdata.userId]
+    )
+    if (rows[0].admin !== 'true') {
+        return
+    } else {
+        await connection.execute(
+            `DELETE FROM tickets WHERE id = ?`,
+            [formdata.ticketId]
+        )
+        return 'Успешно!'
+    }
+}

@@ -1,19 +1,56 @@
+import { Link } from 'react-router-dom';
+import logo from '../images/logo.svg'
+import { Dropdown } from 'bootstrap/dist/js/bootstrap.bundle';
+import { useNavigate } from 'react-router-dom';
+import { useEffect } from 'react';
+
 function SupportNavbar() {
+
+    let loginned = Boolean(localStorage.getItem('loginned'))
+    let language = localStorage.getItem('language')
+    let userId = localStorage.getItem('userId')
+    const navigate = useNavigate('')
+
+    function logout() {
+        localStorage.removeItem('loginned')
+        localStorage.removeItem('userId')
+        return
+    }
+    
+  useEffect(() => {
+    if (!loginned) {
+      navigate('/account/login')
+    }
+  }, [loginned, navigate])
+
     return (
-        <nav className="navbar navbar-expand-lg navbar-light bg-light">
-            <a className="navbar-brand" href="#">Navbar</a>
-            <button className="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
-                <span className="navbar-toggler-icon"></span>
-            </button>
-            <div className="collapse navbar-collapse" id="navbarNavAltMarkup">
-                <div className="navbar-nav">
-                <a className="nav-item nav-link active" href="#">Home <span class="sr-only">(current)</span></a>
-                <a className="nav-item nav-link" href="#">Features</a>
-                <a className="nav-item nav-link" href="#">Pricing</a>
-                <a className="nav-item nav-link disabled" href="#">Disabled</a>
+    <div className='border-bottom'>
+        <nav className="navbar navbar-light bg-light">
+            <div className='container-fluid'>
+                <div className='d-flex'>
+                <a href="/">
+                <img src={logo} alt="" width="59" height="37" className="d-inline-block align-text-top me-2"></img>
+                </a>
+                <h5 className='mt-2'>Поддержка</h5>
+                </div>
+                <div className='d-flex'>
+                    {loginned ? (
+                        <>
+                        <a className='text-decoration-none link-secondary me-2' href='/support/tickets'>Заявки</a>
+                        <a className='text-decoration-none link-secondary me-2' href='/support/create'>Отправить заявку</a>
+                        <a className='text-decoration-none link-secondary me-2' onClick={logout} href='/'>Выход</a>
+                        </>
+                        ) : (
+                            <>
+                            <a className='text-decoration-none link-secondary me-2 mt-2' href='/account/login'>Войти</a>
+                            <a className='text-decoration-none link-secondary me-2 mt-2' href='/account/register'>Зарегестрироваться</a>
+                            </>
+                    )}
                 </div>
             </div>
         </nav>
+    </div>
     )
 }
+
 export default SupportNavbar;

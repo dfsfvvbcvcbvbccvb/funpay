@@ -1,6 +1,6 @@
 import express, { response } from 'express';
 import mysql from 'mysql2/promise';
-import { registration, login, getGames, getGameById, createGame, createCategory, getCategories, createLot, getLots, getLotById, getUserById, getCategoryById, getLotsByUserId, getBalanceByUserId, getOrdersByUserId, buyOrder, sendMessage, getMessages, trustSellerCheck, getFinancesByUserId, getSalesByUserId, confirmLot } from './repository.js';
+import { registration, login, getGames, getGameById, createGame, createCategory, getCategories, createLot, getLots, getLotById, getUserById, getCategoryById, getLotsByUserId, getBalanceByUserId, getOrdersByUserId, buyOrder, sendMessage, getMessages, trustSellerCheck, getFinancesByUserId, getSalesByUserId, confirmLot, createTicket, getTicketsByUserId, getTicketInfo, sendSupportMessage, getSupportMessages, deleteTicket } from './repository.js';
 const app = express()
 const PORT = 4000
 
@@ -79,6 +79,12 @@ app.post('/api/game/:id', async (req, res) => {
     let formdata = req.params.id
 
     let response = await getGameById(formdata)
+    res.json(response)
+});
+
+app.post('/support/ticket/delete', async (req,res) => {
+    let formdata = req.body
+    let response = await deleteTicket(formdata)
     res.json(response)
 });
 
@@ -187,6 +193,36 @@ app.post('/api/finances/:id', async (req,res) => {
 app.post('/api/sales/:id', async (req,res) => {
     let formdata = req.params.id
     let response = await getSalesByUserId(formdata)
+    res.json(response)
+});
+
+app.post('/support/create', async (req,res) => {
+    let formdata = req.body
+    let response = await createTicket(formdata)
+    res.json(response)
+});
+
+app.post('/support/:id', async (req,res) => {
+    let formdata = req.params.id
+    let response = await getTicketsByUserId(formdata)
+    res.json(response)
+});
+
+app.post('/support/ticket/:id', async (req,res) => {
+    let formdata = req.params.id
+    let response = await getTicketInfo(formdata)
+    res.json(response)
+});
+
+app.post('/support/message/send', async (req,res) => {
+    let formdata = req.body
+    let response = await sendSupportMessage(formdata)
+    res.json(response)
+});
+
+app.post('/support/messages/:id', async (req,res) => {
+    let formdata = req.params.id
+    let response = await getSupportMessages(formdata)
     res.json(response)
 });
 
