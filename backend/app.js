@@ -1,6 +1,6 @@
 import express, { response } from 'express';
 import mysql from 'mysql2/promise';
-import { registration, login, getGames, getGameById, createGame, createCategory, getCategories, createLot, getLots, getLotById, getUserById, getCategoryById, getLotsByUserId, getBalanceByUserId, getOrdersByUserId, buyOrder, sendMessage, getMessages, trustSellerCheck, getFinancesByUserId, getSalesByUserId, confirmLot, createTicket, getTicketsByUserId, getTicketInfo, sendSupportMessage, getSupportMessages, deleteTicket } from './repository.js';
+import { registration, login, getGames, getGameById, createGame, createCategory, getCategories, createLot, getLots, getLotById, getUserById, getCategoryById, getLotsByUserId, getBalanceByUserId, getOrdersByUserId, buyOrder, sendMessage, getMessages, trustSellerCheck, getFinancesByUserId, getSalesByUserId, confirmLot, createTicket, getTicketsByUserId, getTicketInfo, sendSupportMessage, getSupportMessages, deleteTicket, changeTicketStatus } from './repository.js';
 const app = express()
 const PORT = 4000
 
@@ -93,7 +93,6 @@ app.post('/api/lots/confirm/:id/:userId', async (req,res) => {
         lotId: Number(req.params.id),
         userId: Number(req.params.userId)
     }
-    console.log(formdata)
     let response = await confirmLot(formdata)
     res.json(response)
 });
@@ -162,7 +161,8 @@ app.post('/api/messages/sender/:id1/receiver/:id2', async (req, res) => {
     let formdata = {
         senderId: req.params.id1,
         receiverId: req.params.id2,
-        content: req.body.content
+        content: req.body.content,
+        lotId: req.body.lotId
     }
 
     let response = await sendMessage(formdata)
@@ -225,6 +225,11 @@ app.post('/support/messages/:id', async (req,res) => {
     let response = await getSupportMessages(formdata)
     res.json(response)
 });
+app.post('/support/tickets/status/:id', async (req,res) => {
+    let formdata = req.params.id
+    let response = await changeTicketStatus(formdata)
+    res.json(response)
+})
 
 
 app.listen(PORT, () => {

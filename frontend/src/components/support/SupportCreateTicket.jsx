@@ -19,7 +19,6 @@ function SupportCreateTicket() {
         }
 
         let id = localStorage.getItem('userId')
-        console.log(id)
 
         let formdata = {
             login: login,

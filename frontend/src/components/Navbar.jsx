@@ -46,8 +46,8 @@ function Navbar() {
                 <ul className="dropdown-menu" aria-labelledby="dropdownMenuButton1">
                     <li><a className="dropdown-item" href="/trade/info">Правила</a></li>
                     <li><a className="dropdown-item" href="/support">Центр помощи</a></li>
-                    <li><a className="dropdown-item" href="/support/tickets/new">Отправить запрос</a></li>
-                    {loginned ? ( <li><a className="dropdown-item" href="/">Мои запросы</a></li>) : ( <></> ) }
+                    <li><a className="dropdown-item" href="/support/create">Отправить запрос</a></li>
+                    {loginned ? ( <li><a className="dropdown-item" href="/support/tickets">Мои запросы</a></li>) : ( <></> ) }
                 </ul>
                 </div>
                 </div>
@@ -56,7 +56,6 @@ function Navbar() {
                         <>
                         <a className='text-decoration-none link-secondary me-2' href='/orders'>Покупки</a>
                         <a className='text-decoration-none link-secondary me-2' href='/orders/trade'>Продажи</a>
-                        <a className='text-decoration-none link-secondary me-2' href='/chat'>Сообщения</a>
                         <a className='text-decoration-none link-secondary me-2' href='/account/balance'>Финансы</a>
                         <a className='text-decoration-none link-secondary me-2' href={`/accounts/profile/${userId}`}>Профиль</a>
                         <a className='text-decoration-none link-secondary me-2' onClick={logout} href='/'>Выход</a>

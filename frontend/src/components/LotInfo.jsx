@@ -20,7 +20,6 @@ function LotInfo() {
         try {
             let id = localStorage.getItem('userId')
             let response = await axios.post(`/api/lots/${params.game_id}/${params.category_id}/${params.lot_id}`)
-            console.log(response.data)
             if (response.data[0].confirmation === "true") {
               setConfirmation(true)
             } else {
@@ -42,6 +41,9 @@ function LotInfo() {
     async function handleConfirmOrder() {
       let formdata = localStorage.getItem('userId')
       let response = await axios.post(`/api/lots/confirm/${lot[0].id}/${formdata}`)
+      if (response.data === 'Успешно!') {
+        navigate('/')
+      }
     }
 
     async function handleBuy() {
@@ -58,7 +60,8 @@ function LotInfo() {
       }
       let response = await axios.post('/api/orders/buy', formdata)
       if (response.data === 'Успешно!') {
-        navigate('/')
+        setConfirmation(true)
+        return
       } else {
         setError(response.data)
       }
@@ -68,11 +71,13 @@ function LotInfo() {
       let senderId = localStorage.getItem('userId')
       let receiverId = lot[0]?.ownerId
       let formdata = {
-        content: content
+        content: content,
+        lotId: lot[0].id
       }
       let response = await axios.post(`/api/messages/sender/${senderId}/receiver/${receiverId}`, formdata)
       
       if (response.data === 'Успешно!') {
+        window.location.reload()
         return
       } else {
         setError('Ошибка при отправке сообщения!')

@@ -68,7 +68,8 @@ export function up(db) {
       receiverId INT,
       content VARCHAR(255) NOT NULL,
       senderUsername VARCHAR(255) NOT NULL,
-      receiverUsername VARCHAR(255) NOT NULL
+      receiverUsername VARCHAR(255) NOT NULL,
+      lotId INT
     );
 
     CREATE TABLE IF NOT EXISTS game_categories (

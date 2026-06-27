@@ -11,6 +11,7 @@ function SupportTicketInfo() {
     const [messages, setMessages] = useState([])
     const [message, setMessage] = useState('')
     const [admin, setAdmin] = useState(false)
+    const [resolved, setResolved] = useState(false)
     const navigate = useNavigate()
 
     useEffect(() => {
@@ -20,9 +21,15 @@ function SupportTicketInfo() {
             let response = await axios.post(`/support/ticket/${id.id}`)
             let response2 = await axios.post(`/support/messages/${id.id}`)
             let response3 = await axios.post(`/api/user/${userId}`)
-            console.log(response3)
             if (response3.data[0].admin === 'true') {
                 setAdmin(true)
+            }
+            if (response.data.length === 0) {
+                navigate('/support/tickets')
+                return
+            }
+            if (response.data[0].status === 'resolved') {
+                setResolved(true)
             }
             setTicket(response.data)
             setMessages(response2.data)
@@ -60,6 +67,25 @@ function SupportTicketInfo() {
         }
     }
 
+    async function handleChangeStatus() {
+        let id = ticket[0].id
+
+        let response = await axios.post(`/support/tickets/status/${id}`)
+        if (!resolved) {
+            if (response.data === 'Успешно!') {
+                setResolved(true)
+                return
+            }
+        }
+        if (resolved) {
+            if (response.data === 'Успешно!') {
+                setResolved(false)
+                return
+            }
+        }
+        
+    }
+
     return (
        <div className="me-5 ms-5">
           <div>
@@ -69,7 +95,11 @@ function SupportTicketInfo() {
                 {admin ? (
                  <div className="d-flex mt-2">
                     <button onClick={handleFormDelete} className="btn btn-danger me-2">Удалить тикет</button>
-                    <button className="btn btn-success me-2 ms-2">Решено</button>
+                    {resolved ? (
+                      <button onClick={handleChangeStatus} className="btn btn-success me-2 ms-2">Открыть снова</button>
+                        ) : (
+                      <button onClick={handleChangeStatus} className="btn btn-success me-2 ms-2">Решено</button>
+                    )}
                  </div>
                 ) : (
                  <></>
@@ -97,10 +127,19 @@ function SupportTicketInfo() {
             </div>
           ))}
           </div>
-          <div className="d-flex flex-column">
-          <input className="form-control mt-2 w-25" placeholder="Сообщение:" onChange={(e) => setMessage(e.target.value)}></input>
-          <button className="btn btn-primary mt-2 w-25" onClick={handleSendMessage}>Отправить</button>
+          <>
+          {resolved ? (
+            <div class="alert alert-danger mt-2">
+                <h3>Тикет закрыт.</h3>
+            </div>
+            ) : (
+           <div className="d-flex flex-column">
+            <input className="form-control mt-2 w-25" placeholder="Сообщение:" onChange={(e) => setMessage(e.target.value)}></input>
+            <button className="btn btn-primary mt-2 w-25" onClick={handleSendMessage}>Отправить</button>
           </div>
+           )}
+           </>
+          
           <Footer></Footer>
         </div> 
     )

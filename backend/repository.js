@@ -199,8 +199,8 @@ export async function createLot(formdata) {
     }
 
     await connection.execute(
-        `INSERT INTO lots (name, description, price, category_id, game_id, ownerUsername, ownerId, confirmation, confirmed, buyerId) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-        [formdata.name, formdata.description, formdata.price, formdata.category_id, formdata.game_id.id, formdata.ownerUsername, formdata.ownerId, 'false', 'false', '0']
+        `INSERT INTO lots (name, description, price, category_id, game_id, ownerUsername, ownerId, confirmation, confirmed) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        [formdata.name, formdata.description, formdata.price, formdata.category_id, formdata.game_id.id, formdata.ownerUsername, formdata.ownerId, 'false', 'false']
     )
    
 
@@ -219,20 +219,23 @@ export async function confirmLot(formdata) {
         [formdata.lotId]
     )
 
-    await connection.execute(`
-    INSERT INTO orders (amount, category_id, game_id, buyerId, sellerId) VALUES (?, ?, ?, ?, ?)`,
-    [rows[0].price, rows[0].category_id, rows[0].game_id, formdata.userId, rows[0].ownerId])
+
+    await connection.execute(
+        `INSERT INTO orders (amount, category_id, game_id, buyerId, sellerId) VALUES (?, ?, ?, ?, ?)`,
+        [rows[0].price, rows[0].category_id, rows[0].game_id, formdata.userId, rows[0].ownerId]
+    )
+
     await connection.execute(
         `DELETE FROM lots WHERE id = ${rows[0].id}`
     )
     let [rows2] = await connection.execute(
         `SELECT balance FROM accounts WHERE id = ?`,
-        rows[0].ownerId
+        [rows[0].ownerId]
     )
     let newBalance = Number(rows2[0].balance) + Number(rows[0].price)
     await connection.execute(
         `UPDATE accounts SET balance=${newBalance} WHERE id = ?`,
-        rows[0].ownerId
+        [rows[0].ownerId]
     )
 
     return 'Успешно!'
@@ -375,8 +378,8 @@ export async function sendMessage(formdata) {
     }
 
     await connection.execute(
-        `INSERT INTO messages (senderId, receiverId, content, senderUsername, receiverUsername) VALUES (?, ?, ?, ?, ?)`,
-        [formdata.senderId, formdata.receiverId, formdata.content, rows[0].login, rows2[0].login]
+        `INSERT INTO messages (senderId, receiverId, content, senderUsername, receiverUsername, lotId) VALUES (?, ?, ?, ?, ?, ?)`,
+        [formdata.senderId, formdata.receiverId, formdata.content, rows[0].login, rows2[0].login, formdata.lotId]
     )
 
     return 'Успешно!'
@@ -484,4 +487,26 @@ export async function deleteTicket(formdata) {
         )
         return 'Успешно!'
     }
+}
+
+export async function changeTicketStatus(formdata) {
+    let connection = await getConnection()
+
+    let [rows] = await connection.execute(
+        `SELECT status FROM tickets WHERE id = ?`,
+        [formdata]
+    )
+    if (rows[0].status === 'approval') {
+        await connection.execute(
+            `UPDATE tickets SET status='resolved' WHERE id = ?`,
+            [formdata]
+        )
+    }
+    if (rows[0].status === 'resolved') {
+        await connection.execute(
+            `UPDATE tickets SET status='approval' WHERE id = ?`,
+            [formdata]
+        )
+    }
+    return 'Успешно!'
 }
