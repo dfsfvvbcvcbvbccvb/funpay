@@ -1,6 +1,6 @@
 import express, { response } from 'express';
 import mysql from 'mysql2/promise';
-import { registration, login, getGames, getGameById, createGame, createCategory, getCategories, createLot, getLots, getLotById, getUserById, getCategoryById, getLotsByUserId, getBalanceByUserId, getOrdersByUserId, buyOrder, sendMessage, getMessages, trustSellerCheck, getFinancesByUserId, getSalesByUserId, confirmLot, createTicket, getTicketsByUserId, getTicketInfo, sendSupportMessage, getSupportMessages, deleteTicket, changeTicketStatus } from './repository.js';
+import { registration, login, getGames, getGameById, createGame, createCategory, getCategories, createLot, getLots, getLotById, getUserById, getCategoryById, getLotsByUserId, getBalanceByUserId, getOrdersByUserId, buyOrder, sendMessage, getMessages, trustSellerCheck, getFinancesByUserId, getSalesByUserId, confirmLot, createTicket, getTicketsByUserId, getTicketInfo, sendSupportMessage, getSupportMessages, deleteTicket, changeTicketStatus, getOrderByLotId, orderMoneyBack } from './repository.js';
 const app = express()
 const PORT = 4000
 
@@ -124,6 +124,17 @@ app.post('/api/orders/buy', async (req, res) => {
     res.json(response)
 });
 
+app.post('/api/order/back', async (req,res) => {
+    let formdata = {
+        lotId: req.body.lotId,
+        buyerId: req.body.buyerId,
+        sellerId: req.body.sellerId
+    }
+    let response = await orderMoneyBack(formdata)
+    res.json(response)
+});
+
+
 app.post('/api/lots/user/:id', async (req, res) => {
     let formdata = req.params.id
     let response = await getLotsByUserId(formdata)
@@ -157,7 +168,7 @@ app.post('/api/orders/:id', async (req, res) => {
     let response = await getOrdersByUserId(formdata)
     res.json(response)
 });
-app.post('/api/messages/sender/:id1/receiver/:id2', async (req, res) => {
+app.post('/api/messages/sender/:id1/receiver/:id2/', async (req, res) => {
     let formdata = {
         senderId: req.params.id1,
         receiverId: req.params.id2,
@@ -169,10 +180,11 @@ app.post('/api/messages/sender/:id1/receiver/:id2', async (req, res) => {
     res.json(response)
 });
 
-app.post('/api/getMessages/sender/:id1/receiver/:id2', async (req,res) => {
+app.post('/api/getMessages/sender/:id1/receiver/:id2/:id3', async (req,res) => {
     let formdata = {
         senderId: req.params.id1,
         receiverId: req.params.id2,
+        lotId: req.params.id3
     }
     let response = await getMessages(formdata)
     res.json(response)
@@ -229,8 +241,14 @@ app.post('/support/tickets/status/:id', async (req,res) => {
     let formdata = req.params.id
     let response = await changeTicketStatus(formdata)
     res.json(response)
-})
-
+});
+app.post('/api/order/:id', async (req,res) => {
+    let formdata = {
+        lotId: req.params.id
+    }
+    let response = await getOrderByLotId(formdata)
+    res.json(response)
+});
 
 app.listen(PORT, () => {
   console.log(`Сервер запущен на http://localhost:${PORT}`)

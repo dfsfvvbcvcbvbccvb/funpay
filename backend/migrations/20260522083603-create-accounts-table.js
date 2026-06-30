@@ -33,7 +33,8 @@ export function up(db) {
       ownerUsername VARCHAR(255) NOT NULL,
       ownerId INT,
       confirmation VARCHAR(255) NOT NULL,
-      confirmed VARCHAR(255) NOT NULL
+      confirmed VARCHAR(255) NOT NULL,
+      tempBuyerId VARCHAR(255)
     );
 
      CREATE TABLE IF NOT EXISTS tickets (
@@ -59,7 +60,9 @@ export function up(db) {
       category_id INT,
       game_id INT,
       buyerId INT,
-      sellerId INT
+      sellerId INT,
+      confirm VARCHAR(255),
+      lotId INT
     );
 
     CREATE TABLE IF NOT EXISTS messages (

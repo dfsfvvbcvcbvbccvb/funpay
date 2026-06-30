@@ -9,6 +9,8 @@ function LotInfo() {
 
     const [lot, setLot] = useState('')
     const [confirmation, setConfirmation] = useState('')
+    const [seller, setSeller] = useState('')
+    const [contentJSX, setContentJSX] = useState('')
     const params = useParams()
     const navigate = useNavigate('')
     const [error, setError] = useState('')
@@ -20,15 +22,24 @@ function LotInfo() {
         try {
             let id = localStorage.getItem('userId')
             let response = await axios.post(`/api/lots/${params.game_id}/${params.category_id}/${params.lot_id}`)
-            if (response.data[0].confirmation === "true") {
-              setConfirmation(true)
-            } else {
-              setConfirmation(false)
-            }
-            
+
             setLot(response.data)
-            let id2 = lot[0]?.ownerId
-            let response2 = await axios.post(`/api/getMessages/sender/${id}/receiver/${id2}`)
+            let id2 = response.data[0].ownerId
+            let id3 = response.data[0].id
+            let response3 = await axios.post(`/api/order/${response.data[0].id}`)
+
+            if (response.data[0].confirmation === 'true' && Number(id) === Number(response3.data[0].buyerId)) {
+              setConfirmation(true)
+            }
+
+            if (Number(id) === response.data[0].ownerId && response.data[0].confirmation === 'true') {
+              setConfirmation(true)
+            }
+
+            if (Number(id) === response.data[0].ownerId) {
+              setSeller(true)
+            }
+            let response2 = await axios.post(`/api/getMessages/sender/${id}/receiver/${id2}/${id3}`)
             setMessages(response2.data)
         } catch (e) {
             console.log(e)
@@ -44,6 +55,16 @@ function LotInfo() {
       if (response.data === 'Успешно!') {
         navigate('/')
       }
+    }
+
+    async function handleBackMoney() {
+      let formdata = {
+        sellerId: localStorage.getItem('userId'),
+        lotId: lot[0].id,
+        buyerId: lot[0].tempBuyerId
+      }
+
+      let response = await axios.post('/api/order/back', formdata)
     }
 
     async function handleBuy() {
@@ -64,6 +85,24 @@ function LotInfo() {
         return
       } else {
         setError(response.data)
+      }
+    }
+
+    function getButtonStatus() {
+      if (seller && confirmation) {
+        return (
+          <button onClick={handleBackMoney} className="btn btn-danger mt-2">Вернуть деньги покупателю</button>
+        )
+      }
+      if (confirmation) {
+        return (
+          <button onClick={handleConfirmOrder} className="btn btn-primary mt-2">Подтвердить выполнение заказа</button>
+        )
+      }
+      if (!confirmation) {
+        return (
+          <button onClick={handleBuy} className="btn btn-primary mt-2">Купить</button>
+        )
       }
     }
 
@@ -104,11 +143,9 @@ function LotInfo() {
         <label>Цена</label>
         <p>{lot[0]?.price}</p>
       </div>
-      {confirmation ? (
-        <button onClick={handleConfirmOrder} className="btn btn-primary mt-2">Подтвердить успешное выполнение заказа</button>
-       ) : (
-        <button onClick={handleBuy} className="btn btn-primary mt-2">Купить</button>
-       )}
+
+       <div>{getButtonStatus()}</div>
+       
       <div>
         <div className="d-flex flex-column">
         {messages.map(message => (

@@ -219,10 +219,9 @@ export async function confirmLot(formdata) {
         [formdata.lotId]
     )
 
-
     await connection.execute(
-        `INSERT INTO orders (amount, category_id, game_id, buyerId, sellerId) VALUES (?, ?, ?, ?, ?)`,
-        [rows[0].price, rows[0].category_id, rows[0].game_id, formdata.userId, rows[0].ownerId]
+        `UPDATE orders SET confirm='true' WHERE lotId = ?`,
+        [formdata.lotId]
     )
 
     await connection.execute(
@@ -351,10 +350,22 @@ export async function buyOrder(formdata) {
     }
     if (rows[0].balance >= formdata.price) {
        let newBalance = rows[0].balance - formdata.price
-       await connection.execute(`UPDATE accounts SET balance=${newBalance} WHERE id = ${formdata.userId}`)
+       await connection.execute(`UPDATE accounts SET balance=? WHERE id = ?`,
+        [newBalance, formdata.userId]
+       )
+
+       await connection.execute(
+        `INSERT INTO orders (amount, category_id, game_id, buyerId, sellerId, confirm, lotId) VALUES (?, ?, ?, ?, ?, ?, ?)`,
+        [formdata.price, formdata.category_id, formdata.game_id, formdata.userId, formdata.sellerId, 'false', formdata.lotId]
+        )
+
        await connection.execute(
         `UPDATE lots SET confirmation='true' WHERE id = ?`,
         [formdata.lotId]
+       )
+       await connection.execute(
+        `UPDATE lots SET tempBuyerId = ?`,
+        [formdata.userId]
        )
        return 'Успешно!'
     }
@@ -388,10 +399,16 @@ export async function sendMessage(formdata) {
 export async function getMessages(formdata) {
     let connection = await getConnection()
     let [rows] = await connection.execute(
-        `SELECT * FROM messages WHERE senderId = ? OR receiverId = ?`,
-        [formdata.senderId, formdata.receiverId]
+        `SELECT * FROM messages WHERE lotId = ?`,
+        [formdata.lotId]
     )
-    return rows
+    let tempRows = []
+    for (let a = 0; a < rows.length; a++) {
+        if (Number(rows[a].senderId) === Number(formdata.receiverId) || Number(rows[a].senderId) === Number(formdata.senderId) || Number(rows[a].receiverId) === Number(formdata.senderId)) {
+            tempRows.push(rows[a])
+        }
+    }
+    return tempRows
 }
 
 export async function trustSellerCheck(formdata) {
@@ -509,4 +526,45 @@ export async function changeTicketStatus(formdata) {
         )
     }
     return 'Успешно!'
+}
+
+export async function orderMoneyBack(formdata) {
+    let connection = await getConnection()
+
+    let [rows] = await connection.execute(
+        `SELECT balance FROM accounts WHERE id = ?`,
+        [formdata.buyerId]
+    )
+    let [rows2] = await connection.execute(
+        `SELECT amount FROM orders WHERE lotId = ?`,
+        [formdata.lotId]
+    )
+
+    let newBalance = Number(rows[0].balance) + Number(rows2[0].amount)
+
+    await connection.execute(
+        `UPDATE accounts SET balance=${newBalance} WHERE id = ?`,
+        [formdata.buyerId]
+    )
+    await connection.execute(
+        `UPDATE lots SET tempBuyerId='null' WHERE id = ?`,
+        [formdata.lotId]
+    )
+    await connection.execute(
+        `DELETE FROM orders WHERE lotId = ?`,
+        [formdata.lotId]
+    )
+
+    return 'Успешно!'
+}
+
+export async function getOrderByLotId(formdata) {
+    let connection = await getConnection()
+
+    let [rows] = await connection.execute(
+        `SELECT * FROM orders WHERE lotId = ?`,
+        [formdata.lotId]
+    )
+
+    return rows
 }
