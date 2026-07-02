@@ -47,13 +47,13 @@ function CategoriesLots() {
             {lots.map(lot => (
             <tr key={lot.id}>
               <td className="position-relative">
-              <a className="stretched-link fs-3 text-decoration-none link-secondary" href={`/lots/${game.id}/${params.category_id}/${lot.id}`}><td>{lot.name}</td></a>
+              <a className="stretched-link fs-3 text-decoration-none link-secondary" href={`/lots/${game.id}/${params.category_id}/${lot.id}`}>{lot.name}</a>
               </td>
               <td className="position-relative">
-              <a className="stretched-link fs-3 text-decoration-none link-secondary" href={`/lots/${game.id}/${params.category_id}/${lot.id}`}><td>{lot.ownerUsername}</td></a>
+              <a className="stretched-link fs-3 text-decoration-none link-secondary" href={`/lots/${game.id}/${params.category_id}/${lot.id}`}>{lot.ownerUsername}</a>
               </td>
               <td className="position-relative">
-              <a className="stretched-link fs-3 text-decoration-none link-secondary" href={`/lots/${game.id}/${params.category_id}/${lot.id}`}><td>{lot.price}</td></a>
+              <a className="stretched-link fs-3 text-decoration-none link-secondary" href={`/lots/${game.id}/${params.category_id}/${lot.id}`}>{lot.price}</a>
               </td>
               
             </tr>

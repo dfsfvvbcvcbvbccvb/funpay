@@ -33,9 +33,8 @@ function LoginPage() {
                 return
             }
             if (res.data.res === 'Успешно!') {
-                navigate('/')
                 localStorage.setItem('loginned', true)
-                localStorage.setItem('userId', res.data.userId)
+                navigate('/')
             }
         } catch (error) {
             console.log(error)

@@ -1,10 +1,12 @@
 import express, { response } from 'express';
 import mysql from 'mysql2/promise';
-import { registration, login, getGames, getGameById, createGame, createCategory, getCategories, createLot, getLots, getLotById, getUserById, getCategoryById, getLotsByUserId, getBalanceByUserId, getOrdersByUserId, buyOrder, sendMessage, getMessages, trustSellerCheck, getFinancesByUserId, getSalesByUserId, confirmLot, createTicket, getTicketsByUserId, getTicketInfo, sendSupportMessage, getSupportMessages, deleteTicket, changeTicketStatus, getOrderByLotId, orderMoneyBack } from './repository.js';
+import cookieParser from 'cookie-parser';
+import { registration, login, getGames, getGameById, createGame, createCategory, getCategories, createLot, getLots, getLotById, getUserById, getCategoryById, getLotsByUserId, getBalanceByUserId, getOrdersByUserId, buyOrder, sendMessage, getMessages, trustSellerCheck, getFinancesByUserId, getSalesByUserId, confirmLot, createTicket, getTicketsByUserId, getTicketInfo, sendSupportMessage, getSupportMessages, deleteTicket, changeTicketStatus, getOrderByLotId, orderMoneyBack, deleteLotById, getUserBySessionId, logout } from './repository.js';
 const app = express()
 const PORT = 4000
 
 app.use(express.json())
+app.use(cookieParser());
 app.use(express.urlencoded({ extended: true }))
 
 app.post('/api/login', async (req, res) => {
@@ -14,10 +16,26 @@ app.post('/api/login', async (req, res) => {
         return
     }
     let response = await login(formdata)
+
     if (response.res !== 'Успешно!') {
         res.json('Неверный логин или пароль!')
         return
     }
+
+    res.cookie('login', response.sessionId, {
+        maxAge: 3600000 * 24,
+        httpOnly: true,
+        secure: false,
+        sameSite: 'lax'
+    });
+
+    res.json(response)
+});
+
+app.post('/api/logout', async (req, res) => {
+    let formdata = req.cookies?.login
+    res.clearCookie('login')
+    let response = await logout(formdata)
     res.json(response)
 });
 
@@ -28,6 +46,15 @@ app.post('/api/register', async (req, res) => {
 
     let formdata = req.body
     let response = await registration(formdata)
+    res.json(response)
+});
+
+app.post('/api/getUserId', async (req, res) => {
+    let formdata = req.cookies?.login
+    if (formdata === undefined) {
+        return
+    }
+    let response = await getUserBySessionId(formdata)
     res.json(response)
 });
 
@@ -247,6 +274,16 @@ app.post('/api/order/:id', async (req,res) => {
         lotId: req.params.id
     }
     let response = await getOrderByLotId(formdata)
+    res.json(response)
+});
+
+app.post('/api/lots/delete', async (req,res) => {
+    console.log(req.body)
+    let formdata = {
+        lotId: req.body.lotId,
+        userId: req.body.userId
+    }
+    let response = await deleteLotById(formdata)
     res.json(response)
 });
 

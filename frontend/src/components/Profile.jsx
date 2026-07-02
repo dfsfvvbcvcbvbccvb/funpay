@@ -35,7 +35,7 @@ function Profile() {
     </div>
         <div>
             <h4>Все лоты пользователя:</h4>
-                <table class="table">
+                <table className="table">
                 <thead className="table-dark">
                     <tr>
                     <th scope="col">Описание</th>
@@ -45,15 +45,15 @@ function Profile() {
                 </thead>
                 <tbody>
                     {lots.map(lot => (
-                    <tr>
+                    <tr key={lot.id}>
                     <td className="position-relative">
-                    <a className="stretched-link fs-3 text-decoration-none link-secondary" href={`/lots/${lot.game_id}/${lot.category_id}/${lot.id}`}><td>{lot.name}</td></a>
+                    <a className="stretched-link fs-3 text-decoration-none link-secondary" href={`/lots/${lot.game_id}/${lot.category_id}/${lot.id}`}>{lot.name}</a>
                     </td>
                     <td className="position-relative">
-                    <a className="stretched-link fs-3 text-decoration-none link-secondary" href={`/lots/${lot.game_id}/${lot.category_id}/${lot.id}`}><td>{lot.ownerUsername}</td></a>
+                    <a className="stretched-link fs-3 text-decoration-none link-secondary" href={`/lots/${lot.game_id}/${lot.category_id}/${lot.id}`}>{lot.ownerUsername}</a>
                     </td>
                     <td className="position-relative">
-                    <a className="stretched-link fs-3 text-decoration-none link-secondary" href={`/lots/${lot.game_id}/${lot.category_id}/${lot.id}`}><td>{lot.price}</td></a>
+                    <a className="stretched-link fs-3 text-decoration-none link-secondary" href={`/lots/${lot.game_id}/${lot.category_id}/${lot.id}`}>{lot.price}</a>
                     </td>
                     
                     </tr>

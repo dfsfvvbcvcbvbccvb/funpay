@@ -1,8 +1,9 @@
 import Footer from "../Footer"
 import SupportNavbar from "./SupportNavbar"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import axios from "axios"
 import { useNavigate } from "react-router-dom"
+import getUserId from "../getUserId"
 
 function SupportCreateTicket() {
 
@@ -10,6 +11,22 @@ function SupportCreateTicket() {
     const [problem, setProblem] = useState('')
     const [content, setContent] = useState('')
     const navigate = useNavigate()
+    let [userId, setUserId] = useState()
+
+    useEffect(() => {
+    const loadingUserId = async () => {
+      try {
+        let id = await getUserId()
+        if (id === undefined) {
+            navigate('/login')
+        }
+        setUserId(id)
+      } catch (e) {
+        console.log(e)
+      }
+    }
+        loadingUserId()
+    }, [])
 
     async function handleFormSubmit(e) {
         e.preventDefault()
@@ -18,7 +35,7 @@ function SupportCreateTicket() {
             return
         }
 
-        let id = localStorage.getItem('userId')
+        let id = userId
 
         let formdata = {
             login: login,

@@ -3,6 +3,7 @@ import Footer from "./Footer"
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
+import getUserId from "./getUserId";
 
 function CreateGame() {
 
@@ -12,6 +13,22 @@ function CreateGame() {
     const [categories, setCategories] = useState('')
     const [categoriesId, setCategoriesId] = useState('')
     const [error, setError] = useState('')
+    let [userId, setUserId] = useState()
+
+    useEffect(() => {
+    const loadingUserId = async () => {
+      try {
+        let id = await getUserId()
+        if (id === undefined) {
+            navigate('/login')
+        }
+        setUserId(id)
+      } catch (e) {
+        console.log(e)
+      }
+    }
+        loadingUserId()
+    }, [])
 
     async function handleFormSubmit(e) {
         e.preventDefault()
@@ -19,7 +36,7 @@ function CreateGame() {
             name: name,
             description: description,
             categoriesIds: categoriesId,
-            creatorId: localStorage.getItem('userId')
+            creatorId: userId
         }
         let response = await axios.post('/game/create', formdata)
         if (response.data !== 'Успешно!') {
@@ -34,7 +51,7 @@ function CreateGame() {
     useEffect(() => {
         const loadingInformation = async () => {
         try {
-            let id = localStorage.getItem('userId')
+            let id = userId
             let response = await axios.post(`/api/user/${id}`)
             if (response.data[0].admin !== 'true') {
                 navigate('/')

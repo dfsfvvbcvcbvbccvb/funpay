@@ -2,29 +2,47 @@ import { useState, useEffect } from "react"
 import axios from "axios"
 import Navbar from "./Navbar"
 import Footer from "./Footer"
+import { useNavigate } from "react-router-dom"
+import getUserId from "./getUserId"
 
 function Balance() {
 
     const [balance, setBalance] = useState('')
     const [orders, setOrders] = useState([])
-    let id = localStorage.getItem('userId')
+    const navigate = useNavigate()
+    let [userId, setUserId] = useState()
+
+    useEffect(() => {
+    const loadingUserId = async () => {
+      try {
+        let id = await getUserId()
+        if (id === undefined) {
+            navigate('/login')
+        }
+        setUserId(id)
+      } catch (e) {
+        console.log(e)
+      }
+    }
+        loadingUserId()
+    }, [])
 
     useEffect(() => {
     const loadingBalance = async () => {
       try {
-        let response = await axios.post(`/api/user/balance/${id}`)
-        setBalance(response.data[0].balance)
+        let response = await axios.post(`/api/user/balance/${userId}`)
+        setBalance(response.data[0]?.balance)
       } catch (e) {
         console.log(e)
       }
       }
       loadingBalance()
-    }, [])
+    }, [userId])
 
     useEffect(() => {
     const loadingOrders = async () => {
       try {
-        let id = localStorage.getItem('userId')
+        let id = userId
         let response = await axios.post(`/api/finances/${id}`)
         for (let a = 0; a < response.data.length; a++) {
           if (Number(response.data[a].sellerId) === Number(id)) {
@@ -33,7 +51,6 @@ function Balance() {
             response.data[a].sellerId = false
           }
         }
-        console.log(response.data)
         setOrders(response.data)
       } catch (e) {
         console.log(e)

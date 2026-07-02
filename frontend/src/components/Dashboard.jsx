@@ -29,11 +29,14 @@ function Dashboard() {
     <div className="d-flex">
       <span className="m-2">ВАШИ ИГРЫ</span>
       {games.map(game => (
-        <div key={game.id} className="m-2 row">
-          <a className="col-9 text-decoration-none link-secondary" href={`/lots/${game.id}`}>{game.name}</a>
+        <div key={game.id} className="m-2 p-2 m-2 border">
+          <a className="text-decoration-none link-secondary" href={`/lots/${game.id}`}>Игра {game.name}</a>
+          <div className="d-flex flex-column">
+            <label className="border-top">Категории:</label>
             {game.categories?.map(category => (
               <a href={`/lots/${game.id}/${category.id}`} key={category.id}>{category.name}</a>
             ))}
+            </div>
       </div>
       ))}
     </div>

@@ -23,6 +23,12 @@ export function up(db) {
       name VARCHAR(255) NOT NULL UNIQUE
     );
 
+    CREATE TABLE IF NOT EXISTS sessions (
+      id INT PRIMARY KEY AUTO_INCREMENT,
+      sessionId VARCHAR(255) NOT NULL UNIQUE,
+      userId INT
+    );
+
     CREATE TABLE IF NOT EXISTS lots (
       id INT PRIMARY KEY AUTO_INCREMENT,
       name VARCHAR(255) NOT NULL,

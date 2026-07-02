@@ -3,6 +3,7 @@ import Footer from "./Footer"
 import axios from "axios";
 import { useNavigate, useParams } from "react-router-dom";
 import { useState, useEffect } from "react";
+import getUserId from "./getUserId";
 
 function CreateLot() {
 
@@ -18,6 +19,22 @@ function CreateLot() {
     const [error, setError] = useState('')
     const [price, setPrice] = useState('')
     const gameId = useParams()
+    let [userId, setUserId] = useState()
+
+    useEffect(() => {
+    const loadingUserId = async () => {
+      try {
+        let id = await getUserId()
+        if (id === undefined) {
+            navigate('/login')
+        }
+        setUserId(id)
+      } catch (e) {
+        console.log(e)
+      }
+    }
+        loadingUserId()
+    }, [])
 
     function handleChange(e) {
         setCategory(e.target.value)
@@ -31,8 +48,9 @@ function CreateLot() {
             return
         }
 
-        let id = localStorage.getItem('userId')
-        let res2 = await axios.post(`/api/user/${id}`)
+            let id = userId
+            let res2 = await axios.post(`/api/user/${userId}`)
+        
 
         let formdata = {
             name: name,
@@ -46,6 +64,11 @@ function CreateLot() {
             ownerId: id
         }
 
+        if (formdata.price <= 0) {
+            setError('Цена не может быть равна нулю или быть меньше нуля')
+            return
+        }
+
         let res = await axios.post('/lots/create', formdata)
 
         if (res.data === 'Успешно!') {
@@ -56,10 +79,10 @@ function CreateLot() {
     useEffect(() => {
     const loadingCategories = async () => {
       try {
-        let id = localStorage.getItem('userId')
+        let id = userId
         let response = await axios.post(`/api/game/${gameId.id}`)
         setCategory(response.data.categories[0].id)
-        let response2 = await axios.post(`/api/user/${id}`)
+        let response2 = await axios.post(`/api/user/${userId}`)
         if (response2.data[0].trustedSeller !== 'true') {
             navigate('/seller/test')
             return
@@ -70,7 +93,7 @@ function CreateLot() {
       }
     }
     loadingCategories()
-  }, [])
+  }, [userId])
 
     return (
     <div className="container">

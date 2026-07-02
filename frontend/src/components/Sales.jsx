@@ -4,15 +4,33 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import Footer from "./Footer";
 import { useEffect } from "react";
+import getUserId from "./getUserId";
 
 function Sales() {
 
     const [sales, setSales] = useState([])
+    const navigate = useNavigate()
+    let [userId, setUserId] = useState()
+
+    useEffect(() => {
+    const loadingUserId = async () => {
+      try {
+        let id = await getUserId()
+        if (id === undefined) {
+            navigate('/login')
+        }
+        setUserId(id)
+      } catch (e) {
+        console.log(e)
+      }
+    }
+        loadingUserId()
+    }, [])
 
     useEffect(() => {
     const loadingSales = async () => {
       try {
-        let id = localStorage.getItem('userId')
+        let id = userId
         let response = await axios.post(`/api/sales/${id}`)
         setSales(response.data)
       } catch (e) {

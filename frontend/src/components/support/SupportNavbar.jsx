@@ -2,18 +2,35 @@ import { Link } from 'react-router-dom';
 import logo from '../images/logo.svg'
 import { Dropdown } from 'bootstrap/dist/js/bootstrap.bundle';
 import { useNavigate } from 'react-router-dom';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
+import getUserId from '../getUserId';
+import axios from 'axios';
 
 function SupportNavbar() {
 
     let loginned = Boolean(localStorage.getItem('loginned'))
     let language = localStorage.getItem('language')
-    let userId = localStorage.getItem('userId')
     const navigate = useNavigate('')
+    let [userId, setUserId] = useState()
 
-    function logout() {
+    useEffect(() => {
+    const loadingUserId = async () => {
+      try {
+        let id = await getUserId()
+        if (id === undefined) {
+            navigate('/login')
+        }
+        setUserId(id)
+      } catch (e) {
+        console.log(e)
+      }
+    }
+        loadingUserId()
+    }, [])
+
+    async function logout() {
         localStorage.removeItem('loginned')
-        localStorage.removeItem('userId')
+        let response = await axios.post('/api/logout')
         return
     }
     

@@ -1,12 +1,27 @@
 import { Link } from 'react-router-dom';
 import logo from './images/logo.svg'
+import axios from 'axios';
 import { Dropdown } from 'bootstrap/dist/js/bootstrap.bundle';
+import getUserId from './getUserId';
+import { useState, useEffect } from 'react';
 
 function Navbar() {
 
     let loginned = Boolean(localStorage.getItem('loginned'))
     let language = localStorage.getItem('language')
-    let userId = localStorage.getItem('userId')
+    let [userId, setUserId] = useState()
+
+    useEffect(() => {
+    const loadingUserId = async () => {
+      try {
+        let id = await getUserId()
+        setUserId(id)
+      } catch (e) {
+        console.log(e)
+      }
+    }
+        loadingUserId()
+    }, [])
 
 
     function changeValue(value) {
@@ -14,9 +29,9 @@ function Navbar() {
         return
     }
 
-    function logout() {
+    async function logout() {
         localStorage.removeItem('loginned')
-        localStorage.removeItem('userId')
+        let response = await axios.post('/api/logout')
         return
     }
 

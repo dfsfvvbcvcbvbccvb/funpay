@@ -3,6 +3,7 @@ import Footer from "../Footer"
 import axios from "axios"
 import { useState, useEffect } from "react"
 import { useParams, useNavigate } from "react-router-dom"
+import getUserId from "../getUserId"
 
 function SupportTicketInfo() {
 
@@ -13,15 +14,30 @@ function SupportTicketInfo() {
     const [admin, setAdmin] = useState(false)
     const [resolved, setResolved] = useState(false)
     const navigate = useNavigate()
+    let [userId, setUserId] = useState()
+
+    useEffect(() => {
+    const loadingUserId = async () => {
+      try {
+        let id = await getUserId()
+        if (id === undefined) {
+            navigate('/login')
+        }
+        setUserId(id)
+      } catch (e) {
+        console.log(e)
+      }
+    }
+        loadingUserId()
+    }, [])
 
     useEffect(() => {
         const loadingTicketInfo = async () => {
         try {
-            let userId = localStorage.getItem('userId')
             let response = await axios.post(`/support/ticket/${id.id}`)
             let response2 = await axios.post(`/support/messages/${id.id}`)
             let response3 = await axios.post(`/api/user/${userId}`)
-            if (response3.data[0].admin === 'true') {
+            if (response3.data[0]?.admin === 'true') {
                 setAdmin(true)
             }
             if (response.data.length === 0) {
@@ -38,10 +54,10 @@ function SupportTicketInfo() {
         }
         }
         loadingTicketInfo()
-    }, [])
+    }, [userId])
 
     async function handleSendMessage() {
-        let userId = localStorage.getItem('userId')
+        let userId = userId
 
         let formdata = {
             senderId: userId,
@@ -54,7 +70,6 @@ function SupportTicketInfo() {
     }
 
     async function handleFormDelete() {
-        let userId = localStorage.getItem('userId')
 
         let formdata = {
             userId: userId,
@@ -129,7 +144,7 @@ function SupportTicketInfo() {
           </div>
           <>
           {resolved ? (
-            <div class="alert alert-danger mt-2">
+            <div className="alert alert-danger mt-2">
                 <h3>Тикет закрыт.</h3>
             </div>
             ) : (

@@ -4,6 +4,7 @@ import axios from "axios"
 import Navbar from "./Navbar"
 import Footer from "./Footer"
 import { useNavigate } from "react-router-dom"
+import getUserId from "./getUserId"
 
 function LotInfo() {
 
@@ -16,17 +17,37 @@ function LotInfo() {
     const [error, setError] = useState('')
     const [content, setContent] = useState('')
     const [messages, setMessages] = useState([])
+    let [userId, setUserId] = useState('')
+
+    useEffect(() => {
+    const loadingUserId = async () => {
+      try {
+        let id = await getUserId()
+        if (id === undefined) {
+            navigate('/login')
+        }
+        setUserId(id)
+      } catch (e) {
+        console.log(e)
+      }
+    }
+        loadingUserId()
+    }, [])
 
     useEffect(() => {
         const loadingLot = async () => {
         try {
-            let id = localStorage.getItem('userId')
+            let id = userId
             let response = await axios.post(`/api/lots/${params.game_id}/${params.category_id}/${params.lot_id}`)
 
             setLot(response.data)
             let id2 = response.data[0].ownerId
             let id3 = response.data[0].id
             let response3 = await axios.post(`/api/order/${response.data[0].id}`)
+
+          if (Number(id) === Number(response.data[0].ownerId)) {
+              setSeller(true)
+            }
 
             if (response.data[0].confirmation === 'true' && Number(id) === Number(response3.data[0].buyerId)) {
               setConfirmation(true)
@@ -35,10 +56,6 @@ function LotInfo() {
             if (Number(id) === response.data[0].ownerId && response.data[0].confirmation === 'true') {
               setConfirmation(true)
             }
-
-            if (Number(id) === response.data[0].ownerId) {
-              setSeller(true)
-            }
             let response2 = await axios.post(`/api/getMessages/sender/${id}/receiver/${id2}/${id3}`)
             setMessages(response2.data)
         } catch (e) {
@@ -46,11 +63,11 @@ function LotInfo() {
         }
         }
         loadingLot()
-    }, [])
+    }, [userId])
 
 
     async function handleConfirmOrder() {
-      let formdata = localStorage.getItem('userId')
+      let formdata = userId
       let response = await axios.post(`/api/lots/confirm/${lot[0].id}/${formdata}`)
       if (response.data === 'Успешно!') {
         navigate('/')
@@ -59,7 +76,7 @@ function LotInfo() {
 
     async function handleBackMoney() {
       let formdata = {
-        sellerId: localStorage.getItem('userId'),
+        sellerId: userId,
         lotId: lot[0].id,
         buyerId: lot[0].tempBuyerId
       }
@@ -69,7 +86,7 @@ function LotInfo() {
 
     async function handleBuy() {
       let formdata = {
-        userId: localStorage.getItem('userId'),
+        userId: userId,
         sellerId: lot[0]?.ownerId,
         lotId: lot[0]?.id,
         game_id: params?.game_id,
@@ -88,6 +105,21 @@ function LotInfo() {
       }
     }
 
+    async function handleDeleteLot() {
+      let id = lot[0]?.id
+
+      let formdata = {
+        lotId: id,
+        userId: userId
+      }
+
+      let response = await axios.post(`/api/lots/delete`, formdata)
+      if (response.data === 'Успешно!') {
+        navigate('/')
+        return
+      }
+    }
+
     function getButtonStatus() {
       if (seller && confirmation) {
         return (
@@ -99,15 +131,21 @@ function LotInfo() {
           <button onClick={handleConfirmOrder} className="btn btn-primary mt-2">Подтвердить выполнение заказа</button>
         )
       }
+      if (seller) {
+        return (
+          <button onClick={handleDeleteLot} className="btn btn-danger mt-2">Удалить лот</button>
+        )
+      }
       if (!confirmation) {
         return (
           <button onClick={handleBuy} className="btn btn-primary mt-2">Купить</button>
         )
       }
+      
     }
 
     async function handleSendMessage() {
-      let senderId = localStorage.getItem('userId')
+      let senderId = userId
       let receiverId = lot[0]?.ownerId
       let formdata = {
         content: content,

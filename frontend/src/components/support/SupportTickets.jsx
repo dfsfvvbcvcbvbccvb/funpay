@@ -4,15 +4,33 @@ import Footer from "../Footer";
 import SupportNavbar from "./SupportNavbar";
 import { useState } from "react";
 import axios from "axios";
+import getUserId from "../getUserId";
 
 function SupportTickets() {
 
     const [tickets, setTickets] = useState([])
+    const navigate = useNavigate()
+    let [userId, setUserId] = useState()
+
+    useEffect(() => {
+    const loadingUserId = async () => {
+      try {
+        let id = await getUserId()
+        if (id === undefined) {
+            navigate('/login')
+        }
+        setUserId(id)
+      } catch (e) {
+        console.log(e)
+      }
+    }
+        loadingUserId()
+    }, [])
 
     useEffect(() => {
         const loadingTickets = async () => {
         try {
-            let id = localStorage.getItem('userId')
+            let id = userId
             let response = await axios.post(`/support/${id}`)
             setTickets(response.data)
         } catch (e) {
@@ -20,7 +38,7 @@ function SupportTickets() {
         }
         }
         loadingTickets()
-    }, [])
+    }, [userId])
 
   return (
     <div className="me-5 ms-5">

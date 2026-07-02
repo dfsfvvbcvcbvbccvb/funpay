@@ -1,26 +1,43 @@
 import Navbar from "./Navbar"
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import Footer from "./Footer";
-import { useEffect } from "react";
+import getUserId from "./getUserId";
 
 function Orders() {
 
     const [orders, setOrders] = useState([])
+    const navigate = useNavigate()
+    let [userId, setUserId] = useState()
+
+    useEffect(() => {
+    const loadingUserId = async () => {
+      try {
+        let id = await getUserId()
+        if (id === undefined) {
+            navigate('/login')
+        }
+        setUserId(id)
+      } catch (e) {
+        console.log(e)
+      }
+    }
+        loadingUserId()
+    }, [])
 
     useEffect(() => {
     const loadingOrders = async () => {
       try {
-        let id = localStorage.getItem('userId')
-        let response = await axios.post(`/api/orders/${id}`)
+        let id = userId
+        let response = await axios.post(`/api/orders/${userId}`)
         setOrders(response.data)
       } catch (e) {
         console.log(e)
       }
     }
         loadingOrders()
-    }, [])
+    }, [userId])
 
     return (
         <div className="me-5 ms-5">

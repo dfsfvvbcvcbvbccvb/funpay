@@ -1,5 +1,7 @@
 import mysql from 'mysql2/promise';
 import bcrypt from 'bcrypt';
+import crypto from 'crypto'
+
 let saltRounds = 10
 
 async function getConnection() {
@@ -47,9 +49,17 @@ export async function login(formdata) {
     if (isMatch === false) {
         return 'Неверный логин или пароль!'
     } else {
+
+        let sessionId = crypto.randomBytes(32).toString('hex')
+        await connection.execute(
+            `INSERT INTO sessions (sessionId, userId) VALUES (?, ?)`,
+            [sessionId, rows[0].id]
+        )
+
         return {
             res: 'Успешно!',
-            userId: rows[0].id
+            userId: rows[0].id,
+            sessionId: sessionId
         }
     }
 }
@@ -567,4 +577,50 @@ export async function getOrderByLotId(formdata) {
     )
 
     return rows
+}
+
+export async function deleteLotById(formdata) {
+    let connection = await getConnection()
+
+    let [rows] = await connection.execute(
+        `SELECT ownerId FROM lots WHERE id = ?`,
+        [formdata.lotId]
+    )
+
+    if (Number(rows[0].ownerId) !== Number(formdata.userId)) {
+        return
+    }
+
+    if (rows.length === 0) {
+        return
+    }
+
+    await connection.execute(
+        `DELETE FROM lots WHERE id = ?`,
+        [formdata.lotId]
+    )
+
+    return 'Успешно!'
+}
+
+export async function getUserBySessionId(formdata) {
+    let connection = await getConnection()
+
+    let [rows] = await connection.execute(
+        `SELECT userId FROM sessions WHERE sessionId = ?`,
+        [formdata]
+    )
+
+    return rows
+}
+
+export async function logout(formdata) {
+    let connection = await getConnection()
+
+    await connection.execute(
+        `DELETE FROM sessions WHERE sessionId = ?`,
+        [formdata]
+    )
+
+    return 'Успешно!'
 }
