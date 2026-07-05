@@ -18,6 +18,7 @@ import Sales from './components/Sales';
 import SupportCreateTicket from './components/support/SupportCreateTicket';
 import SupportTickets from './components/support/SupportTickets';
 import SupportTicketInfo from './components/support/SupportTicketInfo';
+import Messages from './components/Messages';
 
 function AppRoutes() {
 
@@ -42,6 +43,7 @@ function AppRoutes() {
             <Route path="/support/create" element={<SupportCreateTicket/>}/>
             <Route path="/support/tickets" element={<SupportTickets/>}/>
             <Route path="/support/ticket/:id" element={<SupportTicketInfo/>}/>
+            <Route path="/messages" element={<Messages/>}/>
         </Routes>
     )
 }

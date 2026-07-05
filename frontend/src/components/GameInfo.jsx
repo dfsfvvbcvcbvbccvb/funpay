@@ -35,8 +35,8 @@ function GameInfo() {
     </div>
 
     <div>
-      <h1>Игра {game.name}</h1>
-      <h4>Описание: {game.description}</h4>
+      <h2 className="text-break">Игра {game.name}</h2>
+      <h4 className="text-break">Описание: {game.description}</h4>
       <label className="border-top fs-2">Категории:</label>
       <div className="d-flex">
         {game.categories?.map(category => (

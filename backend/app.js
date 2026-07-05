@@ -1,7 +1,7 @@
 import express, { response } from 'express';
 import mysql from 'mysql2/promise';
 import cookieParser from 'cookie-parser';
-import { registration, login, getGames, getGameById, createGame, createCategory, getCategories, createLot, getLots, getLotById, getUserById, getCategoryById, getLotsByUserId, getBalanceByUserId, getOrdersByUserId, buyOrder, sendMessage, getMessages, trustSellerCheck, getFinancesByUserId, getSalesByUserId, confirmLot, createTicket, getTicketsByUserId, getTicketInfo, sendSupportMessage, getSupportMessages, deleteTicket, changeTicketStatus, getOrderByLotId, orderMoneyBack, deleteLotById, getUserBySessionId, logout } from './repository.js';
+import { registration, login, getGames, getGameById, createGame, createCategory, getCategories, createLot, getLots, getLotById, getUserById, getCategoryById, getLotsByUserId, getBalanceByUserId, getOrdersByUserId, buyOrder, sendMessage, getMessages, trustSellerCheck, getFinancesByUserId, getSalesByUserId, confirmLot, createTicket, getTicketsByUserId, getTicketInfo, sendSupportMessage, getSupportMessages, deleteTicket, changeTicketStatus, getOrderByLotId, orderMoneyBack, deleteLotById, getUserBySessionId, logout, getUnreadMessages, messagesRead } from './repository.js';
 const app = express()
 const PORT = 4000
 
@@ -280,12 +280,27 @@ app.post('/api/order/:id', async (req,res) => {
 });
 
 app.post('/api/lots/delete', async (req,res) => {
-    console.log(req.body)
     let formdata = {
         lotId: req.body.lotId,
         userId: req.body.userId
     }
     let response = await deleteLotById(formdata)
+    res.json(response)
+});
+
+app.post('/api/messages/unread', async (req,res) => {
+    let formdata = {
+        userId: req.body.userId
+    }
+    let response = await getUnreadMessages(formdata)
+    res.json(response)
+});
+
+app.post('/api/messages/read', async (req,res) => {
+    let formdata = {
+        userId: req.body.userId
+    }
+    let response = await messagesRead(formdata)
     res.json(response)
 });
 

@@ -72,6 +72,7 @@ function Navbar() {
                         <a className='text-decoration-none link-secondary me-2' href='/orders'>Покупки</a>
                         <a className='text-decoration-none link-secondary me-2' href='/orders/trade'>Продажи</a>
                         <a className='text-decoration-none link-secondary me-2' href='/account/balance'>Финансы</a>
+                        <a className='text-decoration-none link-secondary me-2' href='/messages'>Сообщения</a>
                         <a className='text-decoration-none link-secondary me-2' href={`/accounts/profile/${userId}`}>Профиль</a>
                         <a className='text-decoration-none link-secondary me-2' onClick={logout} href='/'>Выход</a>
                         </>

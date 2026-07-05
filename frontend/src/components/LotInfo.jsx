@@ -82,6 +82,10 @@ function LotInfo() {
       }
 
       let response = await axios.post('/api/order/back', formdata)
+      if (response.data === 'Успешно!') {
+        navigate('/')
+        return
+      }
     }
 
     async function handleBuy() {

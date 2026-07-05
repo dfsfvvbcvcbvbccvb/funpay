@@ -29,7 +29,6 @@ function Orders() {
     useEffect(() => {
     const loadingOrders = async () => {
       try {
-        let id = userId
         let response = await axios.post(`/api/orders/${userId}`)
         setOrders(response.data)
       } catch (e) {
@@ -63,7 +62,7 @@ function Orders() {
                                 <a className="stretched-link fs-3 text-decoration-none link-secondary"><td>Заказ: {order.id}</td></a>
                                 </td>
                                 <td className="position-relative">
-                                <a className="stretched-link fs-3 text-decoration-none link-secondary"><td className="text-danger">-{order.amount}</td></a>
+                                <a className="stretched-link fs-3 text-decoration-none link-secondary"><td className="text-danger">-{order.amount * order.quantity}</td></a>
                                 </td>
                                 </tr>
                                 ))}

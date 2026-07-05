@@ -30,15 +30,14 @@ function Sales() {
     useEffect(() => {
     const loadingSales = async () => {
       try {
-        let id = userId
-        let response = await axios.post(`/api/sales/${id}`)
+        let response = await axios.post(`/api/sales/${userId}`)
         setSales(response.data)
       } catch (e) {
         console.log(e)
       }
     }
         loadingSales()
-    }, [])
+    }, [userId])
 
     return (
         <div className="me-5 ms-5">
@@ -64,7 +63,7 @@ function Sales() {
                                 <a className="stretched-link fs-3 text-decoration-none link-secondary"><td>Заказ: {sale.id}</td></a>
                                 </td>
                                 <td className="position-relative">
-                                <a className="stretched-link fs-3 text-decoration-none link-secondary"><td className="text-success">+{sale.amount}</td></a>
+                                <a className="stretched-link fs-3 text-decoration-none link-secondary"><td className="text-success">+{sale.amount * sale.quantity}</td></a>
                                 </td>
                                 </tr>
                                 ))}

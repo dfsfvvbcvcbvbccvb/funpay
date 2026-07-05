@@ -42,10 +42,9 @@ function Balance() {
     useEffect(() => {
     const loadingOrders = async () => {
       try {
-        let id = userId
-        let response = await axios.post(`/api/finances/${id}`)
+        let response = await axios.post(`/api/finances/${userId}`)
         for (let a = 0; a < response.data.length; a++) {
-          if (Number(response.data[a].sellerId) === Number(id)) {
+          if (Number(response.data[a].sellerId) === Number(userId)) {
             response.data[a].sellerId = true
           } else {
             response.data[a].sellerId = false
@@ -57,7 +56,7 @@ function Balance() {
       }
     }
         loadingOrders()
-    }, [])
+    }, [userId])
 
     return (
     <div className="ms-5 me-5">
@@ -81,9 +80,9 @@ function Balance() {
                   </td>
                   <td className="position-relative">
                     {order.sellerId ? (
-                      <a className="stretched-link fs-3 text-decoration-none link-secondary"><td className="text-success">+{order.amount}</td></a>
+                      <a className="stretched-link fs-3 text-decoration-none link-secondary"><td className="text-success">+{order.amount * order.quantity}</td></a>
                     ) : (
-                      <a className="stretched-link fs-3 text-decoration-none link-secondary"><td className="text-danger">-{order.amount}</td></a>
+                      <a className="stretched-link fs-3 text-decoration-none link-secondary"><td className="text-danger">-{order.amount * order.quantity}</td></a>
                     )}
                   </td>
                   </tr>

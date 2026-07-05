@@ -1,6 +1,7 @@
 import mysql from 'mysql2/promise';
 import bcrypt from 'bcrypt';
 import crypto from 'crypto'
+import { isGeneratorFunction } from 'util/types';
 
 let saltRounds = 10
 
@@ -221,11 +222,23 @@ export async function confirmLot(formdata) {
     let connection = await getConnection()
 
     await connection.execute(
-        `UPDATE lots SET confirmed='true' WHERE id = ?`,
+        `UPDATE lots SET confirmed='false' WHERE id = ?`,
+        [formdata.lotId]
+    )
+    await connection.execute(
+        `UPDATE lots SET confirmation='false' WHERE id = ?`,
+        [formdata.lotId]
+    )
+    await connection.execute(
+        `UPDATE lots SET tempBuyerId='null' WHERE id = ?`,
         [formdata.lotId]
     )
     let [rows] = await connection.execute(
         `SELECT amount, quantity FROM orders WHERE lotId = ?`,
+        [formdata.lotId]
+    )
+    let [rows3] = await connection.execute(
+        `SELECT * FROM lots WHERE id = ?`,
         [formdata.lotId]
     )
 
@@ -239,17 +252,18 @@ export async function confirmLot(formdata) {
             `DELETE FROM lots WHERE id = ${rows[0].id}`
         )
     }
-    
     let [rows2] = await connection.execute(
         `SELECT balance FROM accounts WHERE id = ?`,
-        [rows[0].ownerId]
+        [rows3[0].ownerId]
     )
-    let newBalance = Number(rows2[0].balance) + Number(rows[0].amount * rows[0].quantity)
+    
+    let newBalance = Number(rows2[0].balance) + Number(rows[0].amount * Number(rows[0].quantity))
     await connection.execute(
         `UPDATE accounts SET balance=${newBalance} WHERE id = ?`,
-        [rows[0].ownerId]
+        [rows3[0].ownerId]
     )
-
+    console.log('test')
+    console.log(formdata)
     return 'Успешно!'
 }
 
@@ -342,7 +356,7 @@ export async function getSalesByUserId(formdata) {
 
     let [rows] = await connection.execute(
         `SELECT * FROM orders WHERE sellerId = ?`,
-        [formdata, formdata]
+        [formdata]
     )
 
     return rows
@@ -365,7 +379,7 @@ export async function buyOrder(formdata) {
     if (Number(formdata.userId) === Number(formdata.sellerId)) {
         return 'У самого себя купить нельзя!'
     }
-    if (rows[0].balance >= formdata.price * quantity) {
+    if (rows[0].balance >= formdata.price * formdata.quantity) {
        let newBalance = rows[0].balance - formdata.price * formdata.quantity
        await connection.execute(`UPDATE accounts SET balance=? WHERE id = ?`,
         [newBalance, formdata.userId]
@@ -634,6 +648,37 @@ export async function logout(formdata) {
     await connection.execute(
         `DELETE FROM sessions WHERE sessionId = ?`,
         [formdata]
+    )
+
+    return 'Успешно!'
+}
+
+export async function getUnreadMessages(formdata) {
+    let connection = await getConnection()
+
+    let [rows] = await connection.execute(
+        `SELECT * FROM unreadMessages WHERE receiverId = ?`,
+        [formdata.userId]
+    )
+
+    return rows
+}
+
+export async function messagesRead(formdata) {
+    let connection = await getConnection()
+
+    let [rows] = await connection.execute(
+        `SELECT * FROM unreadMessages WHERE receiverId = ?`,
+        [formdata.userId]
+    )
+
+    if (rows.length === 0) {
+        return
+    }
+
+    await connection.execute(
+        `UPDATE unreadMessages SET readed='true' WHERE receiverId = ?`,
+        [formdata.userId]
     )
 
     return 'Успешно!'

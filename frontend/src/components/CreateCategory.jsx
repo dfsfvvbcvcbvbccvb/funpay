@@ -35,6 +35,10 @@ function CreateCategory() {
             description: description,
             creatorId: userId
         }
+        if (name.length > 25 || description.length > 25) {
+            setError('Сделайте название или описание игры меньше!')
+            return
+        }
         let response = await axios.post('/category/create', formdata)
         if (response.data !== 'Успешно!') {
             setError(response.data)

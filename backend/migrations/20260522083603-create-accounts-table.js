@@ -73,6 +73,15 @@ export function up(db) {
       quantity INT NOT NULL
     );
 
+    CREATE TABLE IF NOT EXISTS unreadMessages (
+      id INT PRIMARY KEY AUTO_INCREMENT,
+      content VARCHAR(255) NOT NULL,
+      senderUsername VARCHAR(255) NOT NULL,
+      receiverId INT NOT NULL,
+      lotId INT,
+      readed VARCHAR(255)
+    );
+
     CREATE TABLE IF NOT EXISTS messages (
       id INT PRIMARY KEY AUTO_INCREMENT,
       senderId INT,

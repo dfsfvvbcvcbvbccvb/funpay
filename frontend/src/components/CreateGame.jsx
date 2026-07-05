@@ -38,6 +38,14 @@ function CreateGame() {
             categoriesIds: categoriesId,
             creatorId: userId
         }
+        if (formdata.categoriesIds === '') {
+            setError('У игры должны быть категории!')
+            return
+        }
+        if (name.length > 25 || description.length > 25) {
+            setError('Сделайте название или описание игры меньше!')
+            return
+        }
         let response = await axios.post('/game/create', formdata)
         if (response.data !== 'Успешно!') {
             setError(response.data)

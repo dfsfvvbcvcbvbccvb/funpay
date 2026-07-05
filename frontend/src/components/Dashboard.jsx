@@ -26,10 +26,10 @@ function Dashboard() {
       <Navbar></Navbar>
     </div>
 
-    <div className="d-flex">
+    <div className="d-flex row text-break">
       <span className="m-2">ВАШИ ИГРЫ</span>
       {games.map(game => (
-        <div key={game.id} className="m-2 p-2 m-2 border">
+        <div key={game.id} className="m-2 p-2 m-2 border w-25">
           <a className="text-decoration-none link-secondary" href={`/lots/${game.id}`}>Игра {game.name}</a>
           <div className="d-flex flex-column">
             <label className="border-top">Категории:</label>

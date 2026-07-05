@@ -66,6 +66,11 @@ function CreateLot() {
             ownerId: id
         }
 
+        if (name.length > 25 || description.length > 25 || price.length > 25 || quantity.length > 25) {
+            setError('Слишком много символов!')
+            return
+        }
+
         if (formdata.price <= 0) {
             setError('Цена не может быть равна нулю или быть меньше нуля')
             return

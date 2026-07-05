@@ -32,8 +32,8 @@ function CategoriesLots() {
         <div>
         <Navbar></Navbar>
         </div>
-        <h1>Игра {game.name}</h1>
-        <h4>{game.description}</h4>
+        <h2 className="text-break">Игра {game.name}</h2>
+        <h4 className="text-break border-top">Описание: {game.description}</h4>
         <div className="d-flex flex-column w-25">
         <table className="table">
           <thead className="table-dark">
