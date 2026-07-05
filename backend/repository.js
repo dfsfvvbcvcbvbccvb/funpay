@@ -209,8 +209,8 @@ export async function createLot(formdata) {
     }
 
     await connection.execute(
-        `INSERT INTO lots (name, description, price, category_id, game_id, ownerUsername, ownerId, confirmation, confirmed) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-        [formdata.name, formdata.description, formdata.price, formdata.category_id, formdata.game_id.id, formdata.ownerUsername, formdata.ownerId, 'false', 'false']
+        `INSERT INTO lots (name, description, price, category_id, game_id, ownerUsername, ownerId, confirmation, confirmed, quantity) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        [formdata.name, formdata.description, formdata.price, formdata.category_id, formdata.game_id.id, formdata.ownerUsername, formdata.ownerId, 'false', 'false', formdata.quantity]
     )
    
 
@@ -225,7 +225,7 @@ export async function confirmLot(formdata) {
         [formdata.lotId]
     )
     let [rows] = await connection.execute(
-        `SELECT * FROM lots WHERE id = ?`,
+        `SELECT amount, quantity FROM orders WHERE lotId = ?`,
         [formdata.lotId]
     )
 
@@ -234,14 +234,17 @@ export async function confirmLot(formdata) {
         [formdata.lotId]
     )
 
-    await connection.execute(
-        `DELETE FROM lots WHERE id = ${rows[0].id}`
-    )
+    if (rows[0].quantity <= 0) {
+        await connection.execute(
+            `DELETE FROM lots WHERE id = ${rows[0].id}`
+        )
+    }
+    
     let [rows2] = await connection.execute(
         `SELECT balance FROM accounts WHERE id = ?`,
         [rows[0].ownerId]
     )
-    let newBalance = Number(rows2[0].balance) + Number(rows[0].price)
+    let newBalance = Number(rows2[0].balance) + Number(rows[0].amount * rows[0].quantity)
     await connection.execute(
         `UPDATE accounts SET balance=${newBalance} WHERE id = ?`,
         [rows[0].ownerId]
@@ -352,27 +355,38 @@ export async function buyOrder(formdata) {
         `SELECT balance FROM accounts WHERE id = ?`,
         [formdata.userId]
     )
+    let [rows2] = await connection.execute(
+        `SELECT quantity FROM lots WHERE id = ?`,
+        [formdata.lotId]
+    )
     if (rows.length === 0) {
         return 'Пользователя с таким id не существует!'
     }
     if (Number(formdata.userId) === Number(formdata.sellerId)) {
         return 'У самого себя купить нельзя!'
     }
-    if (rows[0].balance >= formdata.price) {
-       let newBalance = rows[0].balance - formdata.price
+    if (rows[0].balance >= formdata.price * quantity) {
+       let newBalance = rows[0].balance - formdata.price * formdata.quantity
        await connection.execute(`UPDATE accounts SET balance=? WHERE id = ?`,
         [newBalance, formdata.userId]
        )
-
        await connection.execute(
-        `INSERT INTO orders (amount, category_id, game_id, buyerId, sellerId, confirm, lotId) VALUES (?, ?, ?, ?, ?, ?, ?)`,
-        [formdata.price, formdata.category_id, formdata.game_id, formdata.userId, formdata.sellerId, 'false', formdata.lotId]
+        `INSERT INTO orders (amount, category_id, game_id, buyerId, sellerId, confirm, lotId, quantity) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+        [formdata.price, formdata.category_id, formdata.game_id, formdata.userId, formdata.sellerId, 'false', formdata.lotId, formdata.quantity]
         )
 
        await connection.execute(
         `UPDATE lots SET confirmation='true' WHERE id = ?`,
         [formdata.lotId]
        )
+
+
+       let newQuantity = Number(rows2[0].quantity) - Number(formdata.quantity)
+       await connection.execute(
+        `UPDATE lots SET quantity=${newQuantity} WHERE id = ?`,
+        [formdata.lotId]
+       )
+
        await connection.execute(
         `UPDATE lots SET tempBuyerId = ?`,
         [formdata.userId]

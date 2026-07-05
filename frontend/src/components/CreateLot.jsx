@@ -12,6 +12,7 @@ function CreateLot() {
     const [name, setName] = useState('')
     const [englishName, setEnglishName] = useState('')
     const [description, setDescription] = useState('')
+    const [quantity, setQuantity] = useState('')
     const [englishDescription, setEnglishDescription] = useState('')
     const [english, setEnglish] = useState('')
     const [category, setCategory] = useState('')
@@ -58,6 +59,7 @@ function CreateLot() {
             englishName: englishName,
             englishDescription: englishDescription,
             price: price,
+            quantity: quantity,
             category_id: category,
             game_id: gameId,
             ownerUsername: res2.data[0].login,
@@ -107,10 +109,27 @@ function CreateLot() {
                 <h1>Создание лота для игры {game.name}</h1>
                 <form onSubmit={handleFormSubmit}>
                 <div>
-                    <input className="form-control form-control-lg m-2" onChange={(e) => setName(e.target.value)} type="text" placeholder="Name" aria-label=".form-control-lg example" required></input>
-                    <input className="form-control m-2" type="text" onChange={(e) => setDescription(e.target.value)} placeholder="Description" aria-label="default input example" required></input>
-                    <input className="form-control m-2" type="number" onChange={(e) => setPrice(e.target.value)} placeholder="Price" aria-label="default input example" required></input>
-                    <label>Категория</label>
+                    <div class="form-floating mb-3">
+                        <input className="form-control form-control-lg m-2" onChange={(e) => setName(e.target.value)} id="floatingPassword" type="text" placeholder="Название" aria-label=".form-control-lg example" required></input>
+                        <label for="floatingPassword">Название</label>
+                    </div>
+                    
+                    <div class="form-floating mb-3">
+                        <input className="form-control m-2" type="text" onChange={(e) => setDescription(e.target.value)} id="floatingPassword" placeholder="Описание" aria-label="default input example" required></input>
+                        <label for="floatingPassword">Описание</label>
+                    </div>
+                    
+                    <div class="form-floating mb-3">
+                        <input className="form-control m-2" type="number" onChange={(e) => setQuantity(e.target.value)} id="floatingPassword" placeholder="Количество" aria-label="default input example" required></input>
+                        <label for="floatingPassword">Количество</label>
+                    </div>
+                    
+                    <div class="form-floating mb-3">
+                        <input className="form-control m-2" type="number" onChange={(e) => setPrice(e.target.value)} id="floatingPassword" placeholder="Цена за 1 штуку" aria-label="default input example" required></input>
+                        <label for="floatingPassword">Цена за 1 штуку</label>
+                    </div>
+                    
+                    <span>Категория</span>
                     <select className="form-select form-select mb-2" onChange={handleChange}>
                     {game.categories && game.categories.map(category => (
                         <option key={category.id} value={category.id}>{category.name}</option>

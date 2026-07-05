@@ -33,14 +33,15 @@ export function up(db) {
       id INT PRIMARY KEY AUTO_INCREMENT,
       name VARCHAR(255) NOT NULL,
       description VARCHAR(255) NOT NULL,
-      price INT,
-      category_id INT,
-      game_id INT,
+      price INT NOT NULL,
+      category_id INT NOT NULL,
+      game_id INT NOT NULL,
       ownerUsername VARCHAR(255) NOT NULL,
       ownerId INT,
       confirmation VARCHAR(255) NOT NULL,
       confirmed VARCHAR(255) NOT NULL,
-      tempBuyerId VARCHAR(255)
+      tempBuyerId VARCHAR(255),
+      quantity INT NOT NULL
     );
 
      CREATE TABLE IF NOT EXISTS tickets (
@@ -68,7 +69,8 @@ export function up(db) {
       buyerId INT,
       sellerId INT,
       confirm VARCHAR(255),
-      lotId INT
+      lotId INT,
+      quantity INT NOT NULL
     );
 
     CREATE TABLE IF NOT EXISTS messages (

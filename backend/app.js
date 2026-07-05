@@ -130,7 +130,8 @@ app.post('/api/games', async (req, res) => {
 });
 
 app.post('/lots/create', async (req,res) => {
-    if (req.body.name === '' || req.body.description === '' || req.body.price === '' || req.body.ownerUsername === '') {
+    console.log(req.body)
+    if (req.body.name === '' || req.body.description === '' || req.body.price === '' || req.body.ownerUsername === '' || req.body.quantity === '') {
         res.json('Заполните все поля!')
     }
 
@@ -145,6 +146,7 @@ app.post('/api/orders/buy', async (req, res) => {
         game_id: req.body.game_id,
         category_id: req.body.category_id,
         userId: req.body.userId,
+        quantity: req.body.quantity,
         sellerId: req.body.sellerId
     }
     let response = await buyOrder(formdata)

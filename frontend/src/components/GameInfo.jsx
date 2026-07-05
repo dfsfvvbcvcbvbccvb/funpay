@@ -36,10 +36,13 @@ function GameInfo() {
 
     <div>
       <h1>Игра {game.name}</h1>
-      <h4>{game.description}</h4>
+      <h4>Описание: {game.description}</h4>
+      <label className="border-top fs-2">Категории:</label>
       <div className="d-flex">
         {game.categories?.map(category => (
-          <a key={category.id} href={`/lots/${game.id}/${category.id}`} className="btn btn-primary m-2">{category.name}</a>
+          <>
+          <a key={category.id} href={`/lots/${game.id}/${category.id}`} className="btn btn-primary mt-2 mb-2 me-2">{category.name}</a>
+          </>
         ))}
       </div>
       <a href={`/lots/create/${game.id}`}>Создать Лот</a>
