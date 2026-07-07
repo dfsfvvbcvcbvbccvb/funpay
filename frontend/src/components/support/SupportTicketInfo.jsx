@@ -77,7 +77,7 @@ function SupportTicketInfo() {
         }
 
         let response = await axios.post(`/support/ticket/delete`, formdata)
-        if (response === 'Успешно!') {
+        if (response.data === 'Успешно!') {
             navigate('/support/tickets')
         }
     }

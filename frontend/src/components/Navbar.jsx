@@ -10,6 +10,7 @@ function Navbar() {
     let loginned = Boolean(localStorage.getItem('loginned'))
     let language = localStorage.getItem('language')
     let [userId, setUserId] = useState()
+    let [amountUnread, setAmountUnread] = useState('')
 
     useEffect(() => {
     const loadingUserId = async () => {
@@ -23,6 +24,26 @@ function Navbar() {
         loadingUserId()
     }, [])
 
+    useEffect(() => {
+    const loadingUnreadMessages = async () => {
+      try {
+        let formdata = {
+            userId: userId
+        }
+        let response = await axios.post(`/api/messages/unread`, formdata)
+        let tempNumber = 0
+        for (let a = 0; a < response.data.length; a++) {
+            if (!response.data[a].readed) {
+                tempNumber++
+            }
+        }
+        setAmountUnread(tempNumber)
+      } catch (e) {
+        console.log(e)
+      }
+    }
+        loadingUnreadMessages()
+    }, [userId])
 
     function changeValue(value) {
         localStorage.setItem('value', value)
@@ -72,7 +93,7 @@ function Navbar() {
                         <a className='text-decoration-none link-secondary me-2' href='/orders'>Покупки</a>
                         <a className='text-decoration-none link-secondary me-2' href='/orders/trade'>Продажи</a>
                         <a className='text-decoration-none link-secondary me-2' href='/account/balance'>Финансы</a>
-                        <a className='text-decoration-none link-secondary me-2' href='/messages'>Сообщения</a>
+                        <a className='text-decoration-none link-secondary me-2' href='/messages'>Сообщения {amountUnread}</a>
                         <a className='text-decoration-none link-secondary me-2' href={`/accounts/profile/${userId}`}>Профиль</a>
                         <a className='text-decoration-none link-secondary me-2' onClick={logout} href='/'>Выход</a>
                         </>

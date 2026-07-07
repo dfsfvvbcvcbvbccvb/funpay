@@ -130,7 +130,6 @@ app.post('/api/games', async (req, res) => {
 });
 
 app.post('/lots/create', async (req,res) => {
-    console.log(req.body)
     if (req.body.name === '' || req.body.description === '' || req.body.price === '' || req.body.ownerUsername === '' || req.body.quantity === '') {
         res.json('Заполните все поля!')
     }
@@ -290,7 +289,11 @@ app.post('/api/lots/delete', async (req,res) => {
 
 app.post('/api/messages/unread', async (req,res) => {
     let formdata = {
-        userId: req.body.userId
+        userId: req.body?.userId
+    }
+    if (!formdata.userId) {
+        res.json('Ошибка')
+        return
     }
     let response = await getUnreadMessages(formdata)
     res.json(response)
@@ -299,6 +302,10 @@ app.post('/api/messages/unread', async (req,res) => {
 app.post('/api/messages/read', async (req,res) => {
     let formdata = {
         userId: req.body.userId
+    }
+    if (!formdata.userId) {
+        res.json('Ошибка')
+        return
     }
     let response = await messagesRead(formdata)
     res.json(response)

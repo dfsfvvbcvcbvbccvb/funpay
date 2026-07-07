@@ -70,21 +70,34 @@ function Balance() {
                 <tr>
                 <th scope="col">ID</th>
                 <th scope="col">Сумма</th>
+                <th scope="col">Продавец</th>
+                <th scope="col">Игра</th>
+                <th scope="col">Время</th>
                 </tr>
                 </thead>
                 <tbody>
                   {orders.map(order => (
                   <tr key={order.id}>
                   <td className="position-relative">
-                  <a className="stretched-link fs-3 text-decoration-none link-secondary"><td>Заказ: {order.id}</td></a>
+                  <a className="stretched-link fs-3 text-decoration-none link-secondary">Заказ: {order.id}</a>
                   </td>
                   <td className="position-relative">
                     {order.sellerId ? (
-                      <a className="stretched-link fs-3 text-decoration-none link-secondary"><td className="text-success">+{order.amount * order.quantity}</td></a>
+                      <a className="stretched-link fs-3 text-decoration-none link-secondary"><span className="text-success">+{order.amount * order.quantity}</span></a>
                     ) : (
-                      <a className="stretched-link fs-3 text-decoration-none link-secondary"><td className="text-danger">-{order.amount * order.quantity}</td></a>
+                      <a className="stretched-link fs-3 text-decoration-none link-secondary"><span className="text-danger">-{order.amount * order.quantity}</span></a>
                     )}
+                    </td>
+                    <td className="position-relative">
+                      <a className="stretched-link fs-3 text-decoration-none link-secondary">{order.sellerUsername}</a>
+                    </td>
+                    <td className="position-relative">
+                     <a className="stretched-link fs-3 text-decoration-none link-secondary">{order.gameName}</a>
+                    </td>
+                    <td className="position-relative">
+                  <a className="stretched-link fs-3 text-decoration-none link-secondary">{order.created_at}</a>
                   </td>
+                  
                   </tr>
                   ))}
               </tbody>

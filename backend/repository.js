@@ -33,6 +33,9 @@ export async function registration(formdata) {
             'INSERT INTO accounts (login, password, email, trustedSeller, admin) VALUES (?, ?, ?, ?, ?)',
             [formdata.login, hashedPassword, formdata.email, 'false', 'false']
         )
+
+        await connection.end()
+
     return 'Успешно!'
 }
 
@@ -57,6 +60,8 @@ export async function login(formdata) {
             [sessionId, rows[0].id]
         )
 
+        await connection.end()
+
         return {
             res: 'Успешно!',
             userId: rows[0].id,
@@ -73,6 +78,8 @@ export async function getBalanceByUserId(formdata) {
         [formdata]
     )
 
+    await connection.end()
+
     return rows
 }
 
@@ -83,6 +90,9 @@ export async function getUserById(formdata) {
         `SELECT login, trustedSeller, admin FROM accounts WHERE id = ?`,
         [id]
     )
+
+    await connection.end()
+
     return rows
 }
 
@@ -107,6 +117,9 @@ export async function getGameById(formdata) {
     )
 
     rows[0].categories = categories
+
+    await connection.end()
+
     return rows[0]
 }
 
@@ -159,6 +172,8 @@ export async function createGame(formdata) {
         )
     }
 
+    await connection.end()
+
     return 'Успешно!'
 }
 
@@ -182,6 +197,8 @@ export async function getGames() {
         rows[a].categories = categories
     }
 
+    await connection.end()
+
     return rows
 }
 
@@ -192,6 +209,9 @@ export async function getLotById(formdata) {
         `SELECT * FROM lots WHERE game_id = ? AND category_id = ? AND id = ?`,
         [formdata.game_id, formdata.category_id, formdata.lot_id]
     )
+
+    await connection.end()
+
     return rows
 }
 
@@ -214,6 +234,7 @@ export async function createLot(formdata) {
         [formdata.name, formdata.description, formdata.price, formdata.category_id, formdata.game_id.id, formdata.ownerUsername, formdata.ownerId, 'false', 'false', formdata.quantity]
     )
    
+    await connection.end()
 
     return 'Успешно!'
 }
@@ -247,9 +268,9 @@ export async function confirmLot(formdata) {
         [formdata.lotId]
     )
 
-    if (rows[0].quantity <= 0) {
+    if (rows3[0].quantity <= 0) {
         await connection.execute(
-            `DELETE FROM lots WHERE id = ${rows[0].id}`
+            `DELETE FROM lots WHERE id = ${rows3[0].id}`
         )
     }
     let [rows2] = await connection.execute(
@@ -262,8 +283,9 @@ export async function confirmLot(formdata) {
         `UPDATE accounts SET balance=${newBalance} WHERE id = ?`,
         [rows3[0].ownerId]
     )
-    console.log('test')
-    console.log(formdata)
+
+    await connection.end()
+
     return 'Успешно!'
 }
 
@@ -274,6 +296,9 @@ export async function getLots(formdata) {
         `SELECT * FROM lots WHERE game_id = ? AND category_id = ?`,
         [Number(formdata.game_id), Number(formdata.category_id)]
     )
+
+    await connection.end()
+
     return rows
 }
 
@@ -284,6 +309,9 @@ export async function getLotsByUserId(formdata) {
         `SELECT id, name, price, ownerUsername, game_id, category_id FROM lots WHERE ownerId = ?`,
         [formdata]
     )
+
+    await connection.end()
+
     return rows
 }
 
@@ -294,6 +322,9 @@ export async function getCategoryById(formdata) {
         `SELECT name FROM categories WHERE id = ?`,
         [id]
     )
+
+    await connection.end()
+
     return rows
 }
 
@@ -316,6 +347,8 @@ export async function createCategory(formdata) {
         [formdata.name]
     )
 
+    await connection.end()
+
     return 'Успешно!'
 }
 
@@ -325,6 +358,8 @@ export async function getCategories() {
     let [rows] = await connection.execute(
         `SELECT * FROM categories`
     )
+
+    await connection.end()
 
     return rows
 }
@@ -337,6 +372,8 @@ export async function getOrdersByUserId(formdata) {
         [formdata]
     )
 
+    await connection.end()
+
     return rows
 }
 
@@ -347,6 +384,8 @@ export async function getFinancesByUserId(formdata) {
         `SELECT * FROM orders WHERE buyerId = ? OR sellerId = ?`,
         [formdata, formdata]
     )
+
+    await connection.end()
 
     return rows
 }
@@ -359,6 +398,8 @@ export async function getSalesByUserId(formdata) {
         [formdata]
     )
 
+    await connection.end()
+
     return rows
 }
 
@@ -366,12 +407,16 @@ export async function buyOrder(formdata) {
     let connection = await getConnection()
 
     let [rows] = await connection.execute(
-        `SELECT balance FROM accounts WHERE id = ?`,
+        `SELECT balance, login FROM accounts WHERE id = ?`,
         [formdata.userId]
     )
     let [rows2] = await connection.execute(
-        `SELECT quantity FROM lots WHERE id = ?`,
+        `SELECT * FROM lots WHERE id = ?`,
         [formdata.lotId]
+    )
+    let [rows3] = await connection.execute(
+        `SELECT * FROM games WHERE id = ?`,
+        [formdata.game_id]
     )
     if (rows.length === 0) {
         return 'Пользователя с таким id не существует!'
@@ -385,8 +430,13 @@ export async function buyOrder(formdata) {
         [newBalance, formdata.userId]
        )
        await connection.execute(
-        `INSERT INTO orders (amount, category_id, game_id, buyerId, sellerId, confirm, lotId, quantity) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
-        [formdata.price, formdata.category_id, formdata.game_id, formdata.userId, formdata.sellerId, 'false', formdata.lotId, formdata.quantity]
+        `INSERT INTO orders (amount, category_id, game_id, buyerId, sellerId, confirm, lotId, quantity, sellerUsername, gameName) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        [formdata.price, formdata.category_id, formdata.game_id, formdata.userId, formdata.sellerId, 'false', formdata.lotId, formdata.quantity, rows2[0].ownerUsername, rows3[0].name]
+        )
+
+        await connection.execute(
+            `INSERT INTO unreadMessages (content, senderUsername, receiverId, lotId, gameId, categoryId, gameName, buyerUsername) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+            [`У вас купили лот с айди: ${formdata.lotId}`, 'FunPay', formdata.sellerId, formdata.lotId, formdata.game_id, formdata.category_id, rows3[0].name, rows[0].login]
         )
 
        await connection.execute(
@@ -405,6 +455,9 @@ export async function buyOrder(formdata) {
         `UPDATE lots SET tempBuyerId = ?`,
         [formdata.userId]
        )
+
+       await connection.end()
+
        return 'Успешно!'
     }
 }
@@ -431,6 +484,8 @@ export async function sendMessage(formdata) {
         [formdata.senderId, formdata.receiverId, formdata.content, rows[0].login, rows2[0].login, formdata.lotId]
     )
 
+    await connection.end()
+
     return 'Успешно!'
 }
 
@@ -446,6 +501,9 @@ export async function getMessages(formdata) {
             tempRows.push(rows[a])
         }
     }
+
+    await connection.end()
+
     return tempRows
 }
 
@@ -455,6 +513,9 @@ export async function trustSellerCheck(formdata) {
         `UPDATE accounts SET trustedSeller='true' WHERE id = ?`,
         [formdata.userId]
     )
+
+    await connection.end()
+
     return 'Успешно!'
 }
 
@@ -464,6 +525,9 @@ export async function createTicket(formdata) {
         `INSERT INTO tickets (content, login, problem, senderId, status) VALUES (?, ?, ?, ?, ?)`,
         [formdata.content, formdata.login, formdata.problem, formdata.senderId, 'approval']
     )
+
+    await connection.end()
+
     return 'Успешно!'
 }
 
@@ -475,6 +539,8 @@ export async function getTicketsByUserId(formdata) {
         [formdata]
     )
 
+    await connection.end()
+
     return rows
 }
 
@@ -485,6 +551,8 @@ export async function getTicketInfo(formdata) {
         `SELECT * FROM tickets WHERE id = ?`,
         [formdata]
     )
+
+    await connection.end()
 
     return rows
 }
@@ -501,6 +569,9 @@ export async function sendSupportMessage(formdata) {
         `INSERT INTO supportMessages (content, senderId, ticketId, senderUsername) VALUES (?, ?, ?, ?)`,
         [formdata.content, formdata.senderId, formdata.ticketId, rows[0].login]
     )
+
+    await connection.end()
+
     return 'Успешно!'
 }
 
@@ -512,6 +583,8 @@ export async function getSupportMessages(formdata) {
         [formdata]
     )
 
+    await connection.end()
+
     return rows
 }
 
@@ -522,6 +595,8 @@ export async function changeSupportTicketStatus(formdata) {
         `UPDATE tickets SET status=? WHERE id = ?`,
         [formdata.status, formdata.ticketId]
     )
+
+    await connection.end()
     
     return 'Успешно!'
 }
@@ -540,6 +615,9 @@ export async function deleteTicket(formdata) {
             `DELETE FROM tickets WHERE id = ?`,
             [formdata.ticketId]
         )
+
+        await connection.end()
+
         return 'Успешно!'
     }
 }
@@ -563,6 +641,9 @@ export async function changeTicketStatus(formdata) {
             [formdata]
         )
     }
+
+    await connection.end()
+
     return 'Успешно!'
 }
 
@@ -574,7 +655,11 @@ export async function orderMoneyBack(formdata) {
         [formdata.buyerId]
     )
     let [rows2] = await connection.execute(
-        `SELECT amount FROM orders WHERE lotId = ?`,
+        `SELECT amount, quantity FROM orders WHERE lotId = ?`,
+        [formdata.lotId]
+    )
+    let [rows3] = await connection.execute(
+        `SELECT quantity FROM lots WHERE id = ?`,
         [formdata.lotId]
     )
 
@@ -588,10 +673,17 @@ export async function orderMoneyBack(formdata) {
         `UPDATE lots SET tempBuyerId='null' WHERE id = ?`,
         [formdata.lotId]
     )
+    let newQuantity = Number(rows3[0].quantity) + Number(rows2[0].quantity)
+    await connection.execute(
+        `UPDATE lots SET quantity=${newQuantity} WHERE id = ?`,
+        [formdata.lotId]
+    )
     await connection.execute(
         `DELETE FROM orders WHERE lotId = ?`,
         [formdata.lotId]
     )
+
+    await connection.end()
 
     return 'Успешно!'
 }
@@ -603,6 +695,8 @@ export async function getOrderByLotId(formdata) {
         `SELECT * FROM orders WHERE lotId = ?`,
         [formdata.lotId]
     )
+
+    await connection.end()
 
     return rows
 }
@@ -628,6 +722,8 @@ export async function deleteLotById(formdata) {
         [formdata.lotId]
     )
 
+    await connection.end()
+
     return 'Успешно!'
 }
 
@@ -638,6 +734,8 @@ export async function getUserBySessionId(formdata) {
         `SELECT userId FROM sessions WHERE sessionId = ?`,
         [formdata]
     )
+
+    await connection.end()
 
     return rows
 }
@@ -650,6 +748,8 @@ export async function logout(formdata) {
         [formdata]
     )
 
+    await connection.end()
+
     return 'Успешно!'
 }
 
@@ -660,6 +760,8 @@ export async function getUnreadMessages(formdata) {
         `SELECT * FROM unreadMessages WHERE receiverId = ?`,
         [formdata.userId]
     )
+
+    await connection.end()
 
     return rows
 }
@@ -680,6 +782,8 @@ export async function messagesRead(formdata) {
         `UPDATE unreadMessages SET readed='true' WHERE receiverId = ?`,
         [formdata.userId]
     )
+
+    await connection.end()
 
     return 'Успешно!'
 }

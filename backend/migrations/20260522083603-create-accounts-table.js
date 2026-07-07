@@ -70,7 +70,10 @@ export function up(db) {
       sellerId INT,
       confirm VARCHAR(255),
       lotId INT,
-      quantity INT NOT NULL
+      quantity INT NOT NULL,
+      sellerUsername VARCHAR(255),
+      gameName VARCHAR(255),
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     );
 
     CREATE TABLE IF NOT EXISTS unreadMessages (
@@ -79,7 +82,12 @@ export function up(db) {
       senderUsername VARCHAR(255) NOT NULL,
       receiverId INT NOT NULL,
       lotId INT,
-      readed VARCHAR(255)
+      readed VARCHAR(255),
+      gameId INT,
+      categoryId INT,
+      gameName VARCHAR(255),
+      buyerUsername VARCHAR(255),
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     );
 
     CREATE TABLE IF NOT EXISTS messages (

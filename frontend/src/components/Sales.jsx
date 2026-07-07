@@ -54,16 +54,28 @@ function Sales() {
                                 <tr>
                                 <th scope="col">ID</th>
                                 <th scope="col">Сумма</th>
+                                <th scope="col">Продавец</th>
+                                <th scope="col">Игра</th>
+                                <th scope="col">Время</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {sales.map(sale => (
                                 <tr key={sale.id}>
                                 <td className="position-relative">
-                                <a className="stretched-link fs-3 text-decoration-none link-secondary"><td>Заказ: {sale.id}</td></a>
+                                <a className="stretched-link fs-3 text-decoration-none link-secondary">Заказ: {sale.id}</a>
                                 </td>
                                 <td className="position-relative">
-                                <a className="stretched-link fs-3 text-decoration-none link-secondary"><td className="text-success">+{sale.amount * sale.quantity}</td></a>
+                                <a className="stretched-link fs-3 text-decoration-none link-secondary"><span className="text-success">+{sale.amount * sale.quantity}</span></a>
+                                </td>
+                                <td className="position-relative">
+                                <a className="stretched-link fs-3 text-decoration-none link-secondary">{sale.sellerUsername}</a>
+                                </td>
+                                <td className="position-relative">
+                                <a className="stretched-link fs-3 text-decoration-none link-secondary">{sale.gameName}</a>
+                                </td>
+                                <td className="position-relative">
+                                <a className="stretched-link fs-3 text-decoration-none link-secondary">{sale.created_at}</a>
                                 </td>
                                 </tr>
                                 ))}

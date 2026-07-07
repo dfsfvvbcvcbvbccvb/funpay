@@ -33,6 +33,10 @@ function Messages() {
                 userId: userId
             }
             let response = await axios.post(`/api/messages/unread`, formdata)
+            if (response.data === 'Ошибка') {
+                return
+            }
+            console.log(response.data)
             setMessages(response.data)
             let response2 = await axios.post(`/api/messages/read`, formdata)
         } catch (e) {
@@ -42,30 +46,55 @@ function Messages() {
         loadingUnreadMessages()
     }, [userId])
 
+    function generateMessages(message) {
+        if (!message.readed || message.readed) {
+            
+            if (message.lotId) {
+                return (
+                <tr key={message.id}>
+                    <td className="position-relative">
+                        <a href={`/lots/${message.gameId}/${message.categoryId}/${message.lotId}`} className="stretched-link fs-3 text-decoration-none link-secondary"><span>{message.senderUsername}</span></a>
+                    </td>
+                    <td className="position-relative">
+                        <a href={`/lots/${message.gameId}/${message.categoryId}/${message.lotId}`} className="stretched-link fs-3 text-decoration-none link-secondary"><span className="text-secondary">{message.content}</span></a>
+                    </td>
+                    <td className="position-relative">
+                        <a href={`/lots/${message.gameId}/${message.categoryId}/${message.lotId}`} className="stretched-link fs-3 text-decoration-none link-secondary"><span>{message.buyerUsername}</span></a>
+                    </td>
+                    <td className="position-relative">
+                        <a href={`/lots/${message.gameId}/${message.categoryId}/${message.lotId}`} className="stretched-link fs-3 text-decoration-none link-secondary"><span>{message.gameName}</span></a>
+                    </td>
+                    <td className="position-relative">
+                        <a href={`/lots/${message.gameId}/${message.categoryId}/${message.lotId}`} className="stretched-link fs-3 text-decoration-none link-secondary"><span>{message.created_at}</span></a>
+                    </td>
+                </tr>
+                )
+            }
+        }
+    }
+
     return (
         <div className="ms-5 me-5">
         <div>
             <Navbar></Navbar>
         </div>
         <div>
-            <h2>Непрочитанные сообщения:</h2>
+            <h2>Сообщения:</h2>
             <table className="table">
                 <thead className="table-dark">
                     <tr>
                     <th scope="col">От кого</th>
                     <th scope="col">Содержимое</th>
+                    <th scope="col">Покупатель</th>
+                    <th scope="col">Игра</th>
+                    <th scope="col">Время</th>
                     </tr>
                 </thead>
                 <tbody>
-                    {messages.map(message => (
-                    <tr key={message.id}>
-                    <td className="position-relative">
-                    <a className="stretched-link fs-3 text-decoration-none link-secondary"><td>{message.senderUsername}</td></a>
-                    </td>
-                    <td className="position-relative">
-                    <a className="stretched-link fs-3 text-decoration-none link-secondary"><td className="text-secondary">{message.content}</td></a>
-                    </td>
-                    </tr>
+                    {messages?.map(message => (
+                        <>
+                            {generateMessages(message)}
+                        </>
                     ))}
                 </tbody>
             </table>
