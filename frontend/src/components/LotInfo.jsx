@@ -1,4 +1,4 @@
-import { useState, useEffect  } from "react"
+import { useState, useEffect, useRef  } from "react"
 import { useParams } from "react-router-dom"
 import axios from "axios"
 import Navbar from "./Navbar"
@@ -17,8 +17,12 @@ function LotInfo() {
     const [error, setError] = useState('')
     const [quantity, setQuantity] = useState('')
     const [content, setContent] = useState('')
+    const [comment, setComment] = useState('')
+    const [amountStars, setAmountStars] = useState('')
     const [messages, setMessages] = useState([])
     const [userId, setUserId] = useState('')
+
+    const ws = useRef(null);
 
     useEffect(() => {
     const loadingUserId = async () => {
@@ -56,14 +60,36 @@ function LotInfo() {
             if (Number(userId) === response.data[0].ownerId && response.data[0].confirmation === 'true') {
               setConfirmation(true)
             }
-            let response2 = await axios.post(`/api/getMessages/sender/${userId}/receiver/${id2}/${id3}`)
-            setMessages(response2.data)
+            getMessages(id2, id3, userId)
         } catch (e) {
             console.log(e)
         }
         }
         loadingLot()
     }, [userId])
+
+    async function getMessages(id2, id3, id4) {
+      const socket = new WebSocket('ws://localhost:8080')
+      ws.current = socket
+      if (id4 === '') {
+        return
+      }
+      let messageData = {
+        senderId: id4,
+        receiverId: id2,
+        lotId: id3,
+        get: true
+      };
+      ws.current.onopen = () => {
+        ws.current.send(JSON.stringify(messageData))
+      }
+        ws.current.onmessage = (event) => {
+          console.log('test')
+          let response = JSON.parse(event.data)
+          console.log(response)
+          setMessages(response)
+        }
+    }
 
 
     async function handleConfirmOrder() {
@@ -130,6 +156,23 @@ function LotInfo() {
       }
     }
 
+    async function handleSendReview() {
+      let formdata = {
+        userId: lot[0]?.ownerId,
+        amountStars: amountStars,
+        comment: comment,
+        lotId: lot[0]?.id,
+        senderId: userId
+      }
+
+      let response = await axios.post('/api/review', formdata)
+      if (response.data === 'Успешно!') {
+        return
+      } else {
+        setError(response.data)
+      }
+    }
+
     function getButtonStatus() {
       if (seller && confirmation) {
         return (
@@ -138,7 +181,17 @@ function LotInfo() {
       }
       if (confirmation) {
         return (
-          <button onClick={handleConfirmOrder} className="btn btn-primary mt-2">Подтвердить выполнение заказа</button>
+          <div>
+            <div className="mb-1">
+              <button onClick={handleConfirmOrder} className="btn btn-primary mt-2">Подтвердить выполнение заказа</button>
+            </div>
+            <div>
+              <span className="text-secondary">Введите отзыв и количество звёзд</span>
+              <input onChange={(e) => setComment(e.target.value)} type="text" className="form-control mt-1" placeholder="Отзыв"></input>
+              <input onChange={(e) => setAmountStars(e.target.value)} type="number" className="form-control mt-1" placeholder="Количество звёзд"></input>
+              <button onClick={handleSendReview} className="btn btn-primary mt-1 mb-1">Оставить отзыв</button>
+            </div>
+          </div>
         )
       }
       if (seller) {
@@ -149,9 +202,12 @@ function LotInfo() {
       if (!confirmation) {
         return (
           <div>
-          <div class="form-floating mb-1">
+          <div class="form-floating mb-2">
               <input className="form-control mt-2" type="number" onChange={(e) => setQuantity(e.target.value)} id="floatingPassword" placeholder="Сколько штук хотите купить" required></input>
               <label for="floatingPassword">Сколько штук хотите купить</label>
+          </div>
+          <div>
+            <span className="p-2 border rounded mb-2 mt-2">Итоговая цена: {lot[0]?.price * quantity}₽</span>
           </div>
           <button onClick={handleBuy} className="btn btn-primary mt-1">Купить</button>
           </div>
@@ -162,18 +218,19 @@ function LotInfo() {
 
     async function handleSendMessage() {
       let receiverId = lot[0]?.ownerId
-      let formdata = {
+      ws.current = new WebSocket('ws://localhost:8080');
+
+      const messageData = {
         content: content,
-        lotId: lot[0].id
+        lotId: lot[0]?.id,
+        senderId: userId,
+        receiverId: receiverId,
+      };
+      ws.current.onopen = async () => {
+        ws.current.send(JSON.stringify(messageData))
+        await getMessages(receiverId, lot[0]?.id, userId)
       }
-      let response = await axios.post(`/api/messages/sender/${userId}/receiver/${receiverId}`, formdata)
       
-      if (response.data === 'Успешно!') {
-        window.location.reload()
-        return
-      } else {
-        setError('Ошибка при отправке сообщения!')
-      }
     }
 
   return (
@@ -199,7 +256,7 @@ function LotInfo() {
       </div>
       <div className="border mt-2 rounded p-2">
         <h4>Цена за 1 штуку</h4>
-        <p className="border-top">{lot[0]?.price}</p>
+        <p className="border-top">{lot[0]?.price}₽</p>
       </div>
       
 
@@ -214,8 +271,8 @@ function LotInfo() {
        
        </div>
       <div className="ms-3 mt-2">
-        <div className="d-flex flex-column border p-5 w-75 text-break">
-        {messages.map(message => (
+        <div className="d-flex flex-column border rounded p-5 w-75 text-break">
+        {messages?.map(message => (
           <span className="mt-2 mb-2">Отправитель: {message.senderUsername} Содержимое: {message.content}</span>
         ))}
         </div>

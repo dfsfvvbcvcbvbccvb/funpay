@@ -230,8 +230,8 @@ export async function createLot(formdata) {
     }
 
     await connection.execute(
-        `INSERT INTO lots (name, description, price, category_id, game_id, ownerUsername, ownerId, confirmation, confirmed, quantity) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-        [formdata.name, formdata.description, formdata.price, formdata.category_id, formdata.game_id.id, formdata.ownerUsername, formdata.ownerId, 'false', 'false', formdata.quantity]
+        `INSERT INTO lots (name, description, price, category_id, game_id, ownerUsername, ownerId, confirmation, confirmed, quantity, active) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        [formdata.name, formdata.description, formdata.price, formdata.category_id, formdata.game_id.id, formdata.ownerUsername, formdata.ownerId, 'false', 'false', formdata.quantity, formdata.active]
     )
    
     await connection.end()
@@ -306,7 +306,7 @@ export async function getLotsByUserId(formdata) {
     let connection = await getConnection()
 
     let [rows] = await connection.execute(
-        `SELECT id, name, price, ownerUsername, game_id, category_id FROM lots WHERE ownerId = ?`,
+        `SELECT id, name, price, ownerUsername, game_id, category_id, active FROM lots WHERE ownerId = ?`,
         [formdata]
     )
 
@@ -786,4 +786,92 @@ export async function messagesRead(formdata) {
     await connection.end()
 
     return 'Успешно!'
+}
+
+export async function makeOnline(formdata) {
+    let connection = await getConnection()
+
+    await connection.execute(
+        `UPDATE accounts SET isOnline='true', last_active=NOW() WHERE id = ?`,
+        [formdata.userId]
+    )
+    await connection.end()
+    return 'Успешно!'
+}
+
+export async function getOnlineUsers(formdata) {
+    let connection = await getConnection()
+
+    let [rows] = await connection.execute(
+        `SELECT last_active, isOnline FROM accounts WHERE id = ?`,
+        [formdata.userId]
+    )
+    let newDate = new Date(String(rows[0].last_active))
+    let currentDate = new Date()
+    await connection.end()
+    if (currentDate - newDate > 300000) {
+        return false
+    } else {
+        return true
+    }
+}
+
+export async function addReview(formdata) {
+    let connection = await getConnection()
+
+    if (formdata.amountStars > 5 || formdata.amountStars < 1) {
+        return 'Звёзд должно быть от 1 до 5!'
+    }
+
+    let [rows] = await connection.execute(
+        `SELECT * FROM reviews WHERE lotId = ? AND senderId = ?`,
+        [Number(formdata.lotId), Number(formdata.senderId)]
+    )
+    
+
+    if (rows.length === 0) {
+        let [rows2] = await connection.execute(
+            `SELECT login FROM accounts WHERE id = ?`,
+            [Number(formdata.senderId)]
+        )
+        await connection.execute(
+            `INSERT INTO reviews (userId, amountStars, comment, senderId, senderUsername, lotId) VALUES (?, ?, ?, ?, ?, ?)`,
+            [Number(formdata.userId), Number(formdata.amountStars), formdata.comment, Number(formdata.senderId), rows2[0].login, Number(formdata.lotId)]
+        )
+        return 'Успешно!'
+    } else if (rows.length > 0) {
+        return 'Вы уже отправляли отзыв об этом заказе!'
+    }
+}
+
+export async function getReviews(formdata) {
+    let connection = await getConnection()
+
+    let [rows] = await connection.execute(
+        `SELECT amountStars FROM reviews WHERE userId = ?`,
+        [formdata.userId]
+    )
+
+    if (rows.length === 0) {
+        return 'Отзывов нету!'
+    }
+
+    let rating = 0
+    let tempStars = 0
+
+    for (let a = 0; a < rows.length; a++) {
+        if (rows[a].amountStars === 1) {
+            tempStars = tempStars + rows[a].amountStars
+            tempStars = tempStars - 1
+        }
+        if (rows[a].amountStars === 2) {
+            tempStars = tempStars + rows[a].amountStars
+            tempStars = tempStars - 2
+        } else {
+            tempStars = tempStars + rows[a].amountStars
+        }
+    }
+    
+    rating = Number(tempStars) / Number(rows.length)
+    return rating
 }

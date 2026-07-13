@@ -64,7 +64,7 @@ function Balance() {
             <Navbar></Navbar>
         </div>
         <div>
-            <h3>Ваш баланс: {balance}</h3>
+            <h3>Ваш баланс: {balance}₽</h3>
               <table className="table">
                 <thead className="table-dark">
                 <tr>

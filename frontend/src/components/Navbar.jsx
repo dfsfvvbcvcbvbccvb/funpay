@@ -38,12 +38,32 @@ function Navbar() {
             }
         }
         setAmountUnread(tempNumber)
+        isOnline()
       } catch (e) {
         console.log(e)
       }
     }
         loadingUnreadMessages()
     }, [userId])
+
+    
+    async function isOnline() {
+        
+        if (userId === '' || userId === undefined) {
+            return
+        }
+        console.log('test')
+
+        setInterval(async () => {
+            let formdata = {
+                userId: userId
+            }
+
+            let response = await axios.post(`/api/online`, formdata)
+        }, 2000)
+
+        
+    }
 
     function changeValue(value) {
         localStorage.setItem('value', value)

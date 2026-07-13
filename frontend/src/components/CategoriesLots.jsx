@@ -24,7 +24,29 @@ function CategoriesLots() {
       }
     }
     loadingLots()
-  }, [])
+  }, []) 
+
+  function generateLots(lot) {
+    console.log(lot)
+    if (Boolean(lot.active) !== true) {
+      return
+    }
+    if (Boolean(lot.active) === true) {
+      return (
+        <tr key={lot.id}>
+            <td className="position-relative">
+              <a className="stretched-link fs-3 text-decoration-none link-secondary" href={`/lots/${game.id}/${params.category_id}/${lot.id}`}>{lot.name}</a>
+            </td>
+            <td className="position-relative">
+              <a className="stretched-link fs-3 text-decoration-none link-secondary" href={`/lots/${game.id}/${params.category_id}/${lot.id}`}>{lot.ownerUsername}</a>
+            </td>
+            <td className="position-relative">
+              <a className="stretched-link fs-3 text-decoration-none link-secondary" href={`/lots/${game.id}/${params.category_id}/${lot.id}`}>{lot.price}₽</a>
+            </td>
+        </tr>
+      )
+    }
+  }
 
     return (
         <div className="ms-5 me-5">
@@ -34,29 +56,20 @@ function CategoriesLots() {
         </div>
         <h2 className="text-break">Игра {game.name}</h2>
         <h4 className="text-break border-top">Описание: {game.description}</h4>
-        <div className="d-flex flex-column w-25">
+        <div className="d-flex flex-column w-50">
         <table className="table">
           <thead className="table-dark">
             <tr>
               <th scope="col">Описание</th>
               <th scope="col">Продавец</th>
-              <th scope="col">Цена</th>
+              <th scope="col">Цена за 1 штуку</th>
             </tr>
           </thead>
           <tbody>
             {lots.map(lot => (
-            <tr key={lot.id}>
-              <td className="position-relative">
-              <a className="stretched-link fs-3 text-decoration-none link-secondary" href={`/lots/${game.id}/${params.category_id}/${lot.id}`}>{lot.name}</a>
-              </td>
-              <td className="position-relative">
-              <a className="stretched-link fs-3 text-decoration-none link-secondary" href={`/lots/${game.id}/${params.category_id}/${lot.id}`}>{lot.ownerUsername}</a>
-              </td>
-              <td className="position-relative">
-              <a className="stretched-link fs-3 text-decoration-none link-secondary" href={`/lots/${game.id}/${params.category_id}/${lot.id}`}>{lot.price}</a>
-              </td>
-              
-            </tr>
+            <>
+            {generateLots(lot)}
+            </>
             ))}
           </tbody>
         </table>

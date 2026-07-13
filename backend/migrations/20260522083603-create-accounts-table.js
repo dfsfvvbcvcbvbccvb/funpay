@@ -8,7 +8,9 @@ export function up(db) {
       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
       balance INT,
       trustedSeller VARCHAR(255) NOT NULL,
-      admin VARCHAR(255) NOT NULL
+      admin VARCHAR(255) NOT NULL,
+      isOnline VARCHAR(255),
+      last_active TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
     );
 
     CREATE TABLE IF NOT EXISTS games (
@@ -41,7 +43,8 @@ export function up(db) {
       confirmation VARCHAR(255) NOT NULL,
       confirmed VARCHAR(255) NOT NULL,
       tempBuyerId VARCHAR(255),
-      quantity INT NOT NULL
+      quantity INT NOT NULL,
+      active VARCHAR(255)
     );
 
      CREATE TABLE IF NOT EXISTS tickets (
@@ -98,6 +101,17 @@ export function up(db) {
       senderUsername VARCHAR(255) NOT NULL,
       receiverUsername VARCHAR(255) NOT NULL,
       lotId INT
+    );
+
+    CREATE TABLE IF NOT EXISTS reviews (
+      id INT PRIMARY KEY AUTO_INCREMENT,
+      userId INT,
+      senderId INT,
+      lotId INT,
+      senderUsername VARCHAR(255),
+      amountStars INT,
+      comment VARCHAR(255),
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     );
 
     CREATE TABLE IF NOT EXISTS game_categories (

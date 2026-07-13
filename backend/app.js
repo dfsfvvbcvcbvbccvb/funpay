@@ -1,13 +1,45 @@
 import express, { response } from 'express';
 import mysql from 'mysql2/promise';
 import cookieParser from 'cookie-parser';
-import { registration, login, getGames, getGameById, createGame, createCategory, getCategories, createLot, getLots, getLotById, getUserById, getCategoryById, getLotsByUserId, getBalanceByUserId, getOrdersByUserId, buyOrder, sendMessage, getMessages, trustSellerCheck, getFinancesByUserId, getSalesByUserId, confirmLot, createTicket, getTicketsByUserId, getTicketInfo, sendSupportMessage, getSupportMessages, deleteTicket, changeTicketStatus, getOrderByLotId, orderMoneyBack, deleteLotById, getUserBySessionId, logout, getUnreadMessages, messagesRead } from './repository.js';
+import { WebSocketServer } from 'ws';
+
+import { registration, login, getGames, getGameById, createGame, createCategory, getCategories, createLot, getLots, getLotById, getUserById, getCategoryById, getLotsByUserId, getBalanceByUserId, getOrdersByUserId, buyOrder, sendMessage, getMessages, trustSellerCheck, getFinancesByUserId, getSalesByUserId, confirmLot, createTicket, getTicketsByUserId, getTicketInfo, sendSupportMessage, getSupportMessages, deleteTicket, changeTicketStatus, getOrderByLotId, orderMoneyBack, deleteLotById, getUserBySessionId, logout, getUnreadMessages, messagesRead, makeOnline, getOnlineUsers, addReview, getReviews } from './repository.js';
 const app = express()
 const PORT = 4000
+const server = new WebSocketServer({ port: 8080 })
 
 app.use(express.json())
 app.use(cookieParser());
 app.use(express.urlencoded({ extended: true }))
+
+server.on('connection', async (ws) => {
+    let currentUserId = null
+    let activeClients = new Map()
+    ws.on('message', async (message) => {
+        let parsed = JSON.parse(message)
+        let messageString = message.toString();
+        messageString = JSON.parse(messageString)
+        activeClients.set(Number(messageString.senderId), ws)
+        let response = ''
+        if (messageString.get === true) {
+            response = await getMessages(messageString)
+        } else {
+            await sendMessage(messageString)
+            response = await getMessages(messageString)
+            console.log(messageString)
+            messageString.get = true
+        }
+        
+        if (messageString.get === true) {
+            let receiverWs = activeClients.get(Number(messageString.senderId))
+            receiverWs.send(JSON.stringify(response))
+            
+        }
+    })
+    ws.on('close', () => {
+
+    })
+})
 
 app.post('/api/login', async (req, res) => {
     let formdata = req.body
@@ -310,6 +342,47 @@ app.post('/api/messages/read', async (req,res) => {
     let response = await messagesRead(formdata)
     res.json(response)
 });
+
+app.post('/api/online', async (req,res) => {
+    let formdata = {
+        userId: req.body.userId
+    }
+    if (formdata.userId === undefined) {
+        res.json('Ошибка')
+    }
+    let response = await makeOnline(formdata)
+    res.json(response)
+});
+app.post('/api/online/:id', async (req,res) => {
+    let formdata = {
+        userId: req.params.id
+    }
+    if (formdata.userId === undefined) {
+        res.json('Ошибка')
+    }
+    let response = await getOnlineUsers(formdata)
+    res.json(response)
+});
+app.post('/api/review', async (req,res) => {
+    let formdata = {
+        userId: req.body.userId,
+        amountStars: req.body.amountStars,
+        comment: req.body.comment,
+        lotId: req.body.lotId,
+        senderId: req.body.senderId
+    }
+
+    let response = await addReview(formdata)
+    res.json(response)
+})
+app.post('/api/review/:id', async (req,res) => {
+    let formdata = {
+        userId: req.params.id
+    }
+
+    let response = await getReviews(formdata)
+    res.json(response)
+})
 
 app.listen(PORT, () => {
   console.log(`Сервер запущен на http://localhost:${PORT}`)

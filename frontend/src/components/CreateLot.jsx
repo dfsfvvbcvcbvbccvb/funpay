@@ -17,6 +17,7 @@ function CreateLot() {
     const [english, setEnglish] = useState('')
     const [category, setCategory] = useState('')
     const [game, setGame] = useState('')
+    const [active, setActive] = useState(true)
     const [error, setError] = useState('')
     const [price, setPrice] = useState('')
     const gameId = useParams()
@@ -63,7 +64,8 @@ function CreateLot() {
             category_id: category,
             game_id: gameId,
             ownerUsername: res2.data[0].login,
-            ownerId: id
+            ownerId: id,
+            active: active
         }
 
         if (name.length > 25 || description.length > 25 || price.length > 25 || quantity.length > 25) {
@@ -132,6 +134,13 @@ function CreateLot() {
                     <div class="form-floating mb-3">
                         <input className="form-control m-2" type="number" onChange={(e) => setPrice(e.target.value)} id="floatingPassword" placeholder="Цена за 1 штуку" aria-label="default input example" required></input>
                         <label for="floatingPassword">Цена за 1 штуку</label>
+                    </div>
+
+                    <div class="form-check">
+                    <input class="form-check-input" type="checkbox" value="" id="flexCheckChecked" checked></input>
+                    <label class="form-check-label" for="flexCheckChecked">
+                        Активный
+                    </label>
                     </div>
                     
                     <span>Категория</span>

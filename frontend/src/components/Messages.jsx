@@ -53,7 +53,7 @@ function Messages() {
                 return (
                 <tr key={message.id}>
                     <td className="position-relative">
-                        <a href={`/lots/${message.gameId}/${message.categoryId}/${message.lotId}`} className="stretched-link fs-3 text-decoration-none link-secondary"><span>{message.senderUsername}</span></a>
+                        <a href={`/lots/${message.gameId}/${message.categoryId}/${message.lotId}`} className="stretched-link fs-3 text-decoration-none link-primary"><span>{message.senderUsername}</span></a>
                     </td>
                     <td className="position-relative">
                         <a href={`/lots/${message.gameId}/${message.categoryId}/${message.lotId}`} className="stretched-link fs-3 text-decoration-none link-secondary"><span className="text-secondary">{message.content}</span></a>
@@ -65,7 +65,7 @@ function Messages() {
                         <a href={`/lots/${message.gameId}/${message.categoryId}/${message.lotId}`} className="stretched-link fs-3 text-decoration-none link-secondary"><span>{message.gameName}</span></a>
                     </td>
                     <td className="position-relative">
-                        <a href={`/lots/${message.gameId}/${message.categoryId}/${message.lotId}`} className="stretched-link fs-3 text-decoration-none link-secondary"><span>{message.created_at}</span></a>
+                        <a href={`/lots/${message.gameId}/${message.categoryId}/${message.lotId}`} className="stretched-link fs-3 text-decoration-none link-success"><span>{message.created_at}</span></a>
                     </td>
                 </tr>
                 )
