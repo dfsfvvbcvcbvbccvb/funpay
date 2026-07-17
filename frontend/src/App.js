@@ -19,9 +19,14 @@ import SupportCreateTicket from './components/support/SupportCreateTicket';
 import SupportTickets from './components/support/SupportTickets';
 import SupportTicketInfo from './components/support/SupportTicketInfo';
 import Messages from './components/Messages';
+import { useEffect } from 'react';
 
 function AppRoutes() {
 
+    useEffect(() => {
+        document.title = 'FunPay'
+    }, [])
+ 
     return (
         <Routes>
             <Route path="/" element={<Dashboard/>}/>

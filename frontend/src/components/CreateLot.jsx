@@ -18,6 +18,8 @@ function CreateLot() {
     const [category, setCategory] = useState('')
     const [game, setGame] = useState('')
     const [active, setActive] = useState(true)
+    const [autoIssue, setAutoIssue] = useState(false)
+    const [autoIssueValue, setAutoIssueValue] = useState('')
     const [error, setError] = useState('')
     const [price, setPrice] = useState('')
     const gameId = useParams()
@@ -50,22 +52,39 @@ function CreateLot() {
             return
         }
 
-            let id = userId
-            let res2 = await axios.post(`/api/user/${userId}`)
-        
-
-        let formdata = {
-            name: name,
-            description: description,
-            englishName: englishName,
-            englishDescription: englishDescription,
-            price: price,
-            quantity: quantity,
-            category_id: category,
-            game_id: gameId,
-            ownerUsername: res2.data[0].login,
-            ownerId: id,
-            active: active
+        let id = userId
+        let res2 = await axios.post(`/api/user/${userId}`)
+        let formdata = {} 
+        if (autoIssue === true) {
+            formdata = {
+                name: name,
+                description: description,
+                englishName: englishName,
+                englishDescription: englishDescription,
+                price: price,
+                quantity: quantity,
+                category_id: category,
+                game_id: gameId,
+                ownerUsername: res2.data[0].login,
+                ownerId: id,
+                active: active,
+                autoIssueValue: autoIssueValue,
+                autoIssue: autoIssue
+            }
+        } else {
+            formdata = {
+                name: name,
+                description: description,
+                englishName: englishName,
+                englishDescription: englishDescription,
+                price: price,
+                quantity: quantity,
+                category_id: category,
+                game_id: gameId,
+                ownerUsername: res2.data[0].login,
+                ownerId: id,
+                active: active
+            }
         }
 
         if (name.length > 25 || description.length > 25 || price.length > 25 || quantity.length > 25) {
@@ -136,12 +155,27 @@ function CreateLot() {
                         <label for="floatingPassword">Цена за 1 штуку</label>
                     </div>
 
-                    <div class="form-check">
-                    <input class="form-check-input" type="checkbox" value="" id="flexCheckChecked" checked></input>
-                    <label class="form-check-label" for="flexCheckChecked">
+                    <div className="form-check">
+                    <input onChange={(e) => setActive(e.target.checked)} class="form-check-input" type="checkbox" id="flexCheckChecked" checked></input>
+                    <label className="form-check-label" for="flexCheckChecked">
                         Активный
                     </label>
                     </div>
+
+                    <div className="form-check">
+                    <input onChange={(e) => setAutoIssue(e.target.checked)} class="form-check-input" type="checkbox" id="flexCheckChecked"></input>
+                    <label className="form-check-label" for="flexCheckChecked">
+                        Автовыдача
+                    </label>
+                    </div>
+                    {autoIssue && (
+                        <div className="border rounded p-2 d-flex flex-column">
+                            <div class="mb-3">
+                                <label for="exampleFormControlTextarea1" class="form-label">Поле для автовыдачи</label>
+                                <textarea onChange={(e) => setAutoIssueValue(e.target.value)} class="form-control" id="exampleFormControlTextarea1" rows="3"></textarea>
+                            </div>
+                        </div>
+                    )}
                     
                     <span>Категория</span>
                     <select className="form-select form-select mb-2" onChange={handleChange}>

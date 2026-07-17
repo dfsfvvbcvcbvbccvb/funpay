@@ -69,7 +69,7 @@ function CreateGame() {
         }
         }
         loadingInformation()
-    }, [])
+    }, [userId])
 
     async function handleChange(e) {
         let values = Array.from(e.target.selectedOptions, (option) => option.value)

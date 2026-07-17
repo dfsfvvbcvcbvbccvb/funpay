@@ -3,7 +3,7 @@ import mysql from 'mysql2/promise';
 import cookieParser from 'cookie-parser';
 import { WebSocketServer } from 'ws';
 
-import { registration, login, getGames, getGameById, createGame, createCategory, getCategories, createLot, getLots, getLotById, getUserById, getCategoryById, getLotsByUserId, getBalanceByUserId, getOrdersByUserId, buyOrder, sendMessage, getMessages, trustSellerCheck, getFinancesByUserId, getSalesByUserId, confirmLot, createTicket, getTicketsByUserId, getTicketInfo, sendSupportMessage, getSupportMessages, deleteTicket, changeTicketStatus, getOrderByLotId, orderMoneyBack, deleteLotById, getUserBySessionId, logout, getUnreadMessages, messagesRead, makeOnline, getOnlineUsers, addReview, getReviews } from './repository.js';
+import { registration, login, getGames, getGameById, createGame, createCategory, getCategories, createLot, getLots, getLotById, getUserById, getCategoryById, getLotsByUserId, getBalanceByUserId, getOrdersByUserId, buyOrder, sendMessage, getMessages, trustSellerCheck, getFinancesByUserId, getSalesByUserId, confirmLot, createTicket, getTicketsByUserId, getTicketInfo, sendSupportMessage, getSupportMessages, deleteTicket, changeTicketStatus, getOrderByLotId, orderMoneyBack, deleteLotById, getUserBySessionId, logout, getUnreadMessages, messagesRead, makeOnline, getOnlineUsers, addReview, getReviews, getAutoIssueByLotId, getAllReviews } from './repository.js';
 const app = express()
 const PORT = 4000
 const server = new WebSocketServer({ port: 8080 })
@@ -381,6 +381,24 @@ app.post('/api/review/:id', async (req,res) => {
     }
 
     let response = await getReviews(formdata)
+    res.json(response)
+})
+
+app.post('/api/auto/:id', async (req,res) => {
+    let formdata = {
+        lotId: req.params.id
+    }
+
+    let response = await getAutoIssueByLotId(formdata)
+    res.json(response)
+})
+
+app.post('/api/reviews/:id', async (req, res) => {
+    let formdata = {
+        userId: req.params.id
+    }
+
+    let response = await getAllReviews(formdata)
     res.json(response)
 })
 

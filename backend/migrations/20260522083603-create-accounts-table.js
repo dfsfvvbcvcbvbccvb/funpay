@@ -44,7 +44,8 @@ export function up(db) {
       confirmed VARCHAR(255) NOT NULL,
       tempBuyerId VARCHAR(255),
       quantity INT NOT NULL,
-      active VARCHAR(255)
+      active VARCHAR(255),
+      autoIssue VARCHAR(255)
     );
 
      CREATE TABLE IF NOT EXISTS tickets (
@@ -100,6 +101,13 @@ export function up(db) {
       content VARCHAR(255) NOT NULL,
       senderUsername VARCHAR(255) NOT NULL,
       receiverUsername VARCHAR(255) NOT NULL,
+      lotId INT
+    );
+
+    CREATE TABLE IF NOT EXISTS autoIssue (
+      id INT PRIMARY KEY AUTO_INCREMENT,
+      userId INT,
+      content VARCHAR(255),
       lotId INT
     );
 

@@ -10,6 +10,7 @@ function Profile() {
     const [user, setUser] = useState([])
     const [lots, setLots] = useState([])
     const [online, setOnline] = useState('')
+    const [reviews, setReviews] = useState([])
     const [rating, setRating] = useState('')
 
     useEffect(() => {
@@ -19,9 +20,15 @@ function Profile() {
         let response = await axios.post(`/api/user/${id.id}`)
         let response3 = await axios.post(`/api/online/${id.id}`)
         let response4 = await axios.post(`/api/review/${id.id}`)
-        setRating(Number(response4.data))
+        let response5 = await axios.post(`/api/reviews/${id.id}`)
+        setReviews(response5.data)
+        if (response4.data === NaN) {
+          setRating(0)
+        } else {
+          setRating(response4.data)
+        }
+        
         setOnline(response3.data)
-        console.log(response3.data)
         setUser(response.data)
         setLots(response2.data)
       } catch (e) {
@@ -65,7 +72,7 @@ function Profile() {
         {online ? (
           <>
           <div className="bg-success rounded-circle mt-4 ms-2" style={{ width: '30px', height: '30px' }}></div>
-          <span className="mt-4 ms-2">Онлайн</span>
+          <span className="mt-4 text-primary badge badge-secondary">Онлайн</span>
           </>
         ) : (
           <>
@@ -93,6 +100,20 @@ function Profile() {
                     ))}
                 </tbody>
                 </table>
+                <div className="d-flex flex-column">
+                  {reviews.length > 1 && (
+                    <h3>Отзывы</h3>
+                  )}
+                    {reviews.map(review => (
+                      <>
+                        <div className="border rounded p-2 d-flex flex-column">
+                            <span>Отправитель: {review.senderUsername}</span>
+                            <span className="mt-2 text-secondary">Содержимое: {review.comment}</span>
+                            <span className="text-warning">Количество звёзд: {review.amountStars}</span>
+                        </div>
+                        </>
+                    ))}
+                </div>
                 <Footer></Footer>
         </div>
     </div>

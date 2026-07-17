@@ -229,10 +229,26 @@ export async function createLot(formdata) {
         return 'Вы должны пройти тест на продавца!'
     }
 
-    await connection.execute(
-        `INSERT INTO lots (name, description, price, category_id, game_id, ownerUsername, ownerId, confirmation, confirmed, quantity, active) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-        [formdata.name, formdata.description, formdata.price, formdata.category_id, formdata.game_id.id, formdata.ownerUsername, formdata.ownerId, 'false', 'false', formdata.quantity, formdata.active]
-    )
+    let res = ''
+    if (formdata?.autoIssue === true) {
+        [res] = await connection.execute(
+            `INSERT INTO lots (name, description, price, category_id, game_id, ownerUsername, ownerId, confirmation, confirmed, quantity, active, autoIssue) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+            [formdata.name, formdata.description, formdata.price, formdata.category_id, formdata.game_id.id, formdata.ownerUsername, formdata.ownerId, 'false', 'false', formdata.quantity, formdata.active, formdata?.autoIssue]
+        )
+    } else {
+        [res] = await connection.execute(
+            `INSERT INTO lots (name, description, price, category_id, game_id, ownerUsername, ownerId, confirmation, confirmed, quantity, active) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+            [formdata.name, formdata.description, formdata.price, formdata.category_id, formdata.game_id.id, formdata.ownerUsername, formdata.ownerId, 'false', 'false', formdata.quantity, formdata.active]
+        )
+    }
+    
+
+    if (formdata.autoIssue === true) {
+        await connection.execute(
+            `INSERT INTO autoIssue (userId, content, lotId) VALUES (?, ?, ?)`,
+            [formdata.ownerId, formdata.autoIssueValue, res.insertId]
+        )
+    }
    
     await connection.end()
 
@@ -722,6 +738,15 @@ export async function deleteLotById(formdata) {
         [formdata.lotId]
     )
 
+    await connection.execute(
+        `DELETE FROM messages WHERE lotId = ?`,
+        [formdata.lotId]
+    )
+    await connection.execute(
+        `DELETE FROM autoIssue WHERE lotId = ?`,
+        [formdata.lotId]
+    )
+
     await connection.end()
 
     return 'Успешно!'
@@ -838,6 +863,7 @@ export async function addReview(formdata) {
             `INSERT INTO reviews (userId, amountStars, comment, senderId, senderUsername, lotId) VALUES (?, ?, ?, ?, ?, ?)`,
             [Number(formdata.userId), Number(formdata.amountStars), formdata.comment, Number(formdata.senderId), rows2[0].login, Number(formdata.lotId)]
         )
+        await connection.end()
         return 'Успешно!'
     } else if (rows.length > 0) {
         return 'Вы уже отправляли отзыв об этом заказе!'
@@ -851,6 +877,7 @@ export async function getReviews(formdata) {
         `SELECT amountStars FROM reviews WHERE userId = ?`,
         [formdata.userId]
     )
+    await connection.end()
 
     if (rows.length === 0) {
         return 'Отзывов нету!'
@@ -860,6 +887,14 @@ export async function getReviews(formdata) {
     let tempStars = 0
 
     for (let a = 0; a < rows.length; a++) {
+        if (rows.length === 1 && rows[a].amountStars === 1) {
+            rating = 1
+            return rating
+        }
+        if (rows.length === 1 && rows[a].amountStars === 2) {
+            rating = 2
+            return rating
+        }
         if (rows[a].amountStars === 1) {
             tempStars = tempStars + rows[a].amountStars
             tempStars = tempStars - 1
@@ -874,4 +909,28 @@ export async function getReviews(formdata) {
     
     rating = Number(tempStars) / Number(rows.length)
     return rating
+}
+
+export async function getAllReviews(formdata) {
+    let connection = await getConnection()
+
+    let [rows] = await connection.execute(
+        `SELECT * FROM reviews WHERE userId = ?`,
+        [formdata.userId]
+    )
+
+    return rows
+}
+
+export async function getAutoIssueByLotId(formdata) {
+    let connection = await getConnection()
+
+    let [rows] = await connection.execute(
+        `SELECT * FROM autoIssue WHERE lotId = ?`,
+        [formdata.lotId]
+    )
+
+    await connection.end()
+
+    return rows
 }

@@ -19,6 +19,8 @@ function LotInfo() {
     const [content, setContent] = useState('')
     const [comment, setComment] = useState('')
     const [amountStars, setAmountStars] = useState('')
+    const [autoIssue, setAutoIssue] = useState('')
+    const [autoIssueJSX, setAutoIssueJSX] = useState(false)
     const [messages, setMessages] = useState([])
     const [userId, setUserId] = useState('')
 
@@ -135,6 +137,9 @@ function LotInfo() {
       let response = await axios.post('/api/orders/buy', formdata)
       if (response.data === 'Успешно!') {
         setConfirmation(true)
+        let response2 = await axios.post(`/api/auto/${lot[0]?.id}`)
+        setAutoIssue(response2.data)
+        setAutoIssueJSX(true)
         return
       } else {
         setError(response.data)
@@ -173,6 +178,11 @@ function LotInfo() {
       }
     }
 
+    async function getAutoIssue() {
+      let response = await axios.post(`/api/auto/${lot[0].id}`)
+      setAutoIssue(response.data)
+      return '1'
+    }
     function getButtonStatus() {
       if (seller && confirmation) {
         return (
@@ -180,6 +190,13 @@ function LotInfo() {
         )
       }
       if (confirmation) {
+        if (lot[0].autoIssue === 1 || lot[0].autoIssue === '1') {
+          let test = (async () => {
+            let res = await getAutoIssue()
+            setAutoIssueJSX(true)
+          })
+          test()
+        }
         return (
           <div>
             <div className="mb-1">
@@ -201,15 +218,15 @@ function LotInfo() {
       }
       if (!confirmation) {
         return (
-          <div>
-          <div class="form-floating mb-2">
-              <input className="form-control mt-2" type="number" onChange={(e) => setQuantity(e.target.value)} id="floatingPassword" placeholder="Сколько штук хотите купить" required></input>
+          <div className="d-flex flex-column">
+          <div class="form-floating mb-2 mt-2">
+              <input className="form-control" type="number" onChange={(e) => setQuantity(e.target.value)} id="floatingPassword" placeholder="Сколько штук хотите купить" required></input>
               <label for="floatingPassword">Сколько штук хотите купить</label>
           </div>
-          <div>
-            <span className="p-2 border rounded mb-2 mt-2">Итоговая цена: {lot[0]?.price * quantity}₽</span>
+          <div className="mt-2 mb-2">
+            <span className="p-2 border rounded mb-2 mt-2 text-secondary">Итоговая цена: {lot[0]?.price * quantity}₽</span>
           </div>
-          <button onClick={handleBuy} className="btn btn-primary mt-1">Купить</button>
+          <button onClick={handleBuy} className="btn btn-primary mt-1 w-25">Купить</button>
           </div>
         )
       }
@@ -244,23 +261,29 @@ function LotInfo() {
       <div className="w-50">
       <div className="border mt-2 rounded p-2">
         <h4>Краткое описание</h4>
-        <p className="border-top">{lot[0]?.name}</p>
+        <span className="text-secondary">{lot[0]?.name}</span>
       </div>
       <div className="border mt-2 rounded p-2">
         <h4>Подробное описание</h4>
-        <p className="border-top">{lot[0]?.description}</p>
+        <span className="text-secondary">{lot[0]?.description}</span>
       </div>
       <div className="border mt-2 rounded p-2">
         <h4>Количество товара</h4>
-        <p className="border-top">{lot[0]?.quantity}</p>
+        <span className="text-secondary">{lot[0]?.quantity}</span>
       </div>
       <div className="border mt-2 rounded p-2">
         <h4>Цена за 1 штуку</h4>
-        <p className="border-top">{lot[0]?.price}₽</p>
+        <span className="text-secondary">{lot[0]?.price}₽</span>
       </div>
       
 
        <div>{getButtonStatus()}</div>
+       {autoIssueJSX && (
+        <div className="border rounded d-flex flex-column p-2">
+          <h2>Автовыдача</h2>
+          <span className="mt-2 text-secondary">{autoIssue[0]?.content}</span>
+        </div>
+       )}
        {error && (
           <div className="alert alert-danger mt-2">
               <h3>{error}</h3>

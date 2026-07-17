@@ -65,6 +65,9 @@ function Messages() {
                         <a href={`/lots/${message.gameId}/${message.categoryId}/${message.lotId}`} className="stretched-link fs-3 text-decoration-none link-secondary"><span>{message.gameName}</span></a>
                     </td>
                     <td className="position-relative">
+                        <a href={`/lots/${message.gameId}/${message.categoryId}/${message.lotId}`} className="stretched-link fs-3 text-decoration-none link-secondary"><span>{message.readed}</span></a>
+                    </td>
+                    <td className="position-relative">
                         <a href={`/lots/${message.gameId}/${message.categoryId}/${message.lotId}`} className="stretched-link fs-3 text-decoration-none link-success"><span>{message.created_at}</span></a>
                     </td>
                 </tr>
@@ -87,6 +90,7 @@ function Messages() {
                     <th scope="col">Содержимое</th>
                     <th scope="col">Покупатель</th>
                     <th scope="col">Игра</th>
+                    <th scope="col">Прочитано</th>
                     <th scope="col">Время</th>
                     </tr>
                 </thead>

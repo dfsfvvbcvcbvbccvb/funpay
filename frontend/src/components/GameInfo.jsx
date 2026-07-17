@@ -34,14 +34,14 @@ function GameInfo() {
       <Navbar></Navbar>
     </div>
 
-    <div>
-      <h2 className="text-break">Игра {game.name}</h2>
-      <h4 className="text-break">Описание: {game.description}</h4>
-      <label className="border-top fs-2">Категории:</label>
+    <div className="d-flex flex-column">
+      <h3 className="text-break">Игра {game.name}</h3>
+      <span className="text-break text-secondary">Описание: {game.description}</span>
+      <h4 className="border-top fs-2">Категории:</h4>
       <div className="d-flex">
         {game.categories?.map(category => (
           <>
-          <a key={category.id} href={`/lots/${game.id}/${category.id}`} className="btn btn-primary mt-2 mb-2 me-2">{category.name}</a>
+          <a key={category.id} href={`/lots/${game.id}/${category.id}`} className="btn btn-primary mt-2 mb-2 me-2 btn-lg">{category.name}</a>
           </>
         ))}
       </div>
