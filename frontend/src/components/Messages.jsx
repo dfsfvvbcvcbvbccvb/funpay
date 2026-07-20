@@ -36,7 +36,6 @@ function Messages() {
             if (response.data === 'Ошибка') {
                 return
             }
-            console.log(response.data)
             setMessages(response.data)
             let response2 = await axios.post(`/api/messages/read`, formdata)
         } catch (e) {

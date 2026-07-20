@@ -210,6 +210,11 @@ export async function getLotById(formdata) {
         [formdata.game_id, formdata.category_id, formdata.lot_id]
     )
 
+    if (rows.length === 0) {
+        await connection.end()
+        return 'Не найдено!'
+    }
+
     await connection.end()
 
     return rows
@@ -312,6 +317,25 @@ export async function getLots(formdata) {
         `SELECT * FROM lots WHERE game_id = ? AND category_id = ?`,
         [Number(formdata.game_id), Number(formdata.category_id)]
     )
+
+    for (let a = 0; a < rows.length; a++) {
+        let [tempRow] = await connection.execute(
+            `SELECT isOnline FROM accounts WHERE id = ?`,
+            [rows[a].ownerId]
+        )
+        if (tempRow[0].isOnline === true || tempRow[0].isOnline === 'true') {
+            rows[a].online = "Онлайн"
+        } else {
+            rows[a].online = 'Оффлайн'
+        }
+    }
+    for (let a = 0; a < rows.length; a++) {
+        if (rows[a].autoIssue === '1' || rows[a].autoIssue === 1) {
+            rows[a].autoIssueJsx = 'Да'
+        } else {
+            rows[a].autoIssueJsx = 'Нет'
+        }
+    }
 
     await connection.end()
 
@@ -866,6 +890,7 @@ export async function addReview(formdata) {
         await connection.end()
         return 'Успешно!'
     } else if (rows.length > 0) {
+        await connection.end()
         return 'Вы уже отправляли отзыв об этом заказе!'
     }
 }
@@ -919,6 +944,8 @@ export async function getAllReviews(formdata) {
         [formdata.userId]
     )
 
+    await connection.end()
+
     return rows
 }
 
@@ -933,4 +960,35 @@ export async function getAutoIssueByLotId(formdata) {
     await connection.end()
 
     return rows
+}
+
+export async function editLot(formdata) {
+    let connection = await getConnection()
+
+    let [rows] = await connection.execute(
+        `SELECT ownerId FROM lots WHERE id = ?`,
+        [formdata.lotId]
+    )
+    if (Number(rows[0].ownerId) !== Number(formdata.userId)) {
+        return
+    } else {
+        await connection.execute(
+            `UPDATE lots SET name=? WHERE id = ?`,
+            [formdata.name, formdata.lotId]
+        )
+        await connection.execute(
+            `UPDATE lots SET description=? WHERE id = ?`,
+            [formdata.description, formdata.lotId]
+        )
+        await connection.execute(
+            `UPDATE lots SET price=? WHERE id = ?`,
+            [formdata.price, formdata.lotId]
+        )
+        await connection.execute(
+            `UPDATE lots SET quantity=? WHERE id = ?`,
+            [formdata.quantity, formdata.lotId]
+        )
+        await connection.end()
+        return 'Успешно!'
+    }
 }

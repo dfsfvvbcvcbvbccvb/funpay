@@ -3,7 +3,7 @@ import mysql from 'mysql2/promise';
 import cookieParser from 'cookie-parser';
 import { WebSocketServer } from 'ws';
 
-import { registration, login, getGames, getGameById, createGame, createCategory, getCategories, createLot, getLots, getLotById, getUserById, getCategoryById, getLotsByUserId, getBalanceByUserId, getOrdersByUserId, buyOrder, sendMessage, getMessages, trustSellerCheck, getFinancesByUserId, getSalesByUserId, confirmLot, createTicket, getTicketsByUserId, getTicketInfo, sendSupportMessage, getSupportMessages, deleteTicket, changeTicketStatus, getOrderByLotId, orderMoneyBack, deleteLotById, getUserBySessionId, logout, getUnreadMessages, messagesRead, makeOnline, getOnlineUsers, addReview, getReviews, getAutoIssueByLotId, getAllReviews } from './repository.js';
+import { registration, login, getGames, getGameById, createGame, createCategory, getCategories, createLot, getLots, getLotById, getUserById, getCategoryById, getLotsByUserId, getBalanceByUserId, getOrdersByUserId, buyOrder, sendMessage, getMessages, trustSellerCheck, getFinancesByUserId, getSalesByUserId, confirmLot, createTicket, getTicketsByUserId, getTicketInfo, sendSupportMessage, getSupportMessages, deleteTicket, changeTicketStatus, getOrderByLotId, orderMoneyBack, deleteLotById, getUserBySessionId, logout, getUnreadMessages, messagesRead, makeOnline, getOnlineUsers, addReview, getReviews, getAutoIssueByLotId, getAllReviews, editLot } from './repository.js';
 const app = express()
 const PORT = 4000
 const server = new WebSocketServer({ port: 8080 })
@@ -26,7 +26,6 @@ server.on('connection', async (ws) => {
         } else {
             await sendMessage(messageString)
             response = await getMessages(messageString)
-            console.log(messageString)
             messageString.get = true
         }
         
@@ -37,7 +36,7 @@ server.on('connection', async (ws) => {
         }
     })
     ws.on('close', () => {
-
+        console.log('testik')
     })
 })
 
@@ -399,6 +398,20 @@ app.post('/api/reviews/:id', async (req, res) => {
     }
 
     let response = await getAllReviews(formdata)
+    res.json(response)
+})
+
+app.post('/edit/:game_id/:category_id/:lotId', async (req, res) => {
+    let formdata = {
+        lotId: req.params.lotId,
+        name: req.body.name,
+        description: req.body.description,
+        price: req.body.price,
+        quantity: req.body.quantity,
+        userId: req.body.userId
+    }
+
+    let response = await editLot(formdata)
     res.json(response)
 })
 

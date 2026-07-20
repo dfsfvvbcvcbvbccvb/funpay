@@ -39,7 +39,6 @@ function Profile() {
     }, [])
 
     function generateLots(lot) {
-      console.log(lot)
     if (Boolean(lot.active) !== true) {
       return
     }

@@ -17,7 +17,7 @@ function CreateLot() {
     const [english, setEnglish] = useState('')
     const [category, setCategory] = useState('')
     const [game, setGame] = useState('')
-    const [active, setActive] = useState(true)
+    const [active, setActive] = useState(false)
     const [autoIssue, setAutoIssue] = useState(false)
     const [autoIssueValue, setAutoIssueValue] = useState('')
     const [error, setError] = useState('')
@@ -156,7 +156,7 @@ function CreateLot() {
                     </div>
 
                     <div className="form-check">
-                    <input onChange={(e) => setActive(e.target.checked)} class="form-check-input" type="checkbox" id="flexCheckChecked" checked></input>
+                    <input onChange={(e) => setActive(e.target.checked)} class="form-check-input" type="checkbox" id="flexCheckChecked"></input>
                     <label className="form-check-label" for="flexCheckChecked">
                         Активный
                     </label>

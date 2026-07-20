@@ -20,6 +20,7 @@ import SupportTickets from './components/support/SupportTickets';
 import SupportTicketInfo from './components/support/SupportTicketInfo';
 import Messages from './components/Messages';
 import { useEffect } from 'react';
+import EditLot from './components/EditLot';
 
 function AppRoutes() {
 
@@ -49,6 +50,7 @@ function AppRoutes() {
             <Route path="/support/tickets" element={<SupportTickets/>}/>
             <Route path="/support/ticket/:id" element={<SupportTicketInfo/>}/>
             <Route path="/messages" element={<Messages/>}/>
+            <Route path="/edit/:game_id/:category_id/:lotId" element={<EditLot/>}/>
         </Routes>
     )
 }

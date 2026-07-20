@@ -52,7 +52,6 @@ function Navbar() {
         if (userId === '' || userId === undefined) {
             return
         }
-        console.log('test')
 
         setInterval(async () => {
             let formdata = {

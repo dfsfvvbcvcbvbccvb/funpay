@@ -27,21 +27,29 @@ function CategoriesLots() {
   }, []) 
 
   function generateLots(lot) {
-    console.log(lot)
-    if (Boolean(lot.active) !== true) {
+    if (String(lot.active) === '0') {
       return
     }
-    if (Boolean(lot.active) === true) {
+    if (String(lot.active) === "1") {
       return (
         <tr key={lot.id}>
             <td className="position-relative">
-              <a className="stretched-link fs-3 text-decoration-none link-secondary" href={`/lots/${game.id}/${params.category_id}/${lot.id}`}>{lot.name}</a>
+              <a className="stretched-link fs-3 text-decoration-none link-info" href={`/lots/${game.id}/${params.category_id}/${lot.id}`}>{lot.name}</a>
             </td>
             <td className="position-relative">
               <a className="stretched-link fs-3 text-decoration-none link-secondary" href={`/lots/${game.id}/${params.category_id}/${lot.id}`}>{lot.ownerUsername}</a>
             </td>
             <td className="position-relative">
               <a className="stretched-link fs-3 text-decoration-none link-secondary" href={`/lots/${game.id}/${params.category_id}/${lot.id}`}>{lot.price}₽</a>
+            </td>
+             <td className="position-relative">
+              <a className="stretched-link fs-3 text-decoration-none link-secondary" href={`/lots/${game.id}/${params.category_id}/${lot.id}`}>{lot.quantity}</a>
+            </td>
+            <td className="position-relative">
+              <a className="stretched-link fs-3 text-decoration-none link-secondary" href={`/lots/${game.id}/${params.category_id}/${lot.id}`}>{lot.online}</a>
+            </td>
+            <td className="position-relative">
+              <a className="stretched-link fs-3 text-decoration-none link-secondary" href={`/lots/${game.id}/${params.category_id}/${lot.id}`}>{lot.autoIssueJsx}</a>
             </td>
         </tr>
       )
@@ -56,13 +64,16 @@ function CategoriesLots() {
         </div>
         <h2 className="text-break">Игра {game.name}</h2>
         <h4 className="text-break border-top">Описание: {game.description}</h4>
-        <div className="d-flex flex-column w-50">
+        <div className="d-flex flex-column w-75">
         <table className="table">
           <thead className="table-dark">
             <tr>
               <th scope="col">Описание</th>
               <th scope="col">Продавец</th>
               <th scope="col">Цена за 1 штуку</th>
+              <th scope="col">Штук в наличии</th>
+              <th scope="col">Статус продавца</th>
+              <th scope="col">Автовыдача</th>
             </tr>
           </thead>
           <tbody>

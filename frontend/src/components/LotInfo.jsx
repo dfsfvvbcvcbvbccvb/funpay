@@ -23,6 +23,7 @@ function LotInfo() {
     const [autoIssueJSX, setAutoIssueJSX] = useState(false)
     const [messages, setMessages] = useState([])
     const [userId, setUserId] = useState('')
+    let socket = null
 
     const ws = useRef(null);
 
@@ -45,7 +46,14 @@ function LotInfo() {
         const loadingLot = async () => {
         try {
             let response = await axios.post(`/api/lots/${params.game_id}/${params.category_id}/${params.lot_id}`)
-
+            if (String(response.data[0].active) === "0") {
+              navigate('/')
+              return
+            }
+            if (response.data === 'Не найдено!') {
+              navigate('/')
+              return
+            }
             setLot(response.data)
             let id2 = response.data[0].ownerId
             let id3 = response.data[0].id
@@ -71,8 +79,11 @@ function LotInfo() {
     }, [userId])
 
     async function getMessages(id2, id3, id4) {
-      const socket = new WebSocket('ws://localhost:8080')
+      if (socket === null) {
+        socket = new WebSocket('ws://localhost:8080')
+      }
       ws.current = socket
+      alert('sfdc')
       if (id4 === '') {
         return
       }
@@ -84,13 +95,13 @@ function LotInfo() {
       };
       ws.current.onopen = () => {
         ws.current.send(JSON.stringify(messageData))
+        alert('123')
       }
-        ws.current.onmessage = (event) => {
-          console.log('test')
-          let response = JSON.parse(event.data)
-          console.log(response)
-          setMessages(response)
-        }
+      ws.current.onmessage = (event) => {
+        alert('321')
+        let response = JSON.parse(event.data)
+        setMessages(response)
+      }
     }
 
 
@@ -213,7 +224,10 @@ function LotInfo() {
       }
       if (seller) {
         return (
-          <button onClick={handleDeleteLot} className="btn btn-danger mt-2">Удалить лот</button>
+          <div className="d-flex flex-column">
+            <button onClick={handleDeleteLot} className="btn btn-danger mt-2">Удалить лот</button>
+            <a href={`/edit/${params?.game_id}/${params?.category_id}/${lot[0]?.id}`} className="btn btn-primary mt-2">Редактировать лот</a>
+          </div>
         )
       }
       if (!confirmation) {
@@ -235,7 +249,12 @@ function LotInfo() {
 
     async function handleSendMessage() {
       let receiverId = lot[0]?.ownerId
-      ws.current = new WebSocket('ws://localhost:8080');
+      if (socket === null) {
+        ws.current = new WebSocket('ws://localhost:8080');
+      } else {
+        ws.current = socket
+      }
+      
 
       const messageData = {
         content: content,
@@ -245,7 +264,6 @@ function LotInfo() {
       };
       ws.current.onopen = async () => {
         ws.current.send(JSON.stringify(messageData))
-        await getMessages(receiverId, lot[0]?.id, userId)
       }
       
     }
