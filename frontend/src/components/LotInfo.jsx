@@ -22,6 +22,7 @@ function LotInfo() {
     const [autoIssue, setAutoIssue] = useState('')
     const [autoIssueJSX, setAutoIssueJSX] = useState(false)
     const [messages, setMessages] = useState([])
+    const [tabs, setTabs] = useState([])
     const [userId, setUserId] = useState('')
     let socket = null
 
@@ -83,23 +84,32 @@ function LotInfo() {
         socket = new WebSocket('ws://localhost:8080')
       }
       ws.current = socket
-      alert('sfdc')
       if (id4 === '') {
         return
       }
       let messageData = {
         senderId: id4,
-        receiverId: id2,
+        receiverId: 2,
         lotId: id3,
         get: true
       };
       ws.current.onopen = () => {
         ws.current.send(JSON.stringify(messageData))
-        alert('123')
       }
       ws.current.onmessage = (event) => {
-        alert('321')
         let response = JSON.parse(event.data)
+        let tempIds = []
+        for (let a = 0; a < response.length; a++) {
+          if (!tempIds.includes(response[a].senderId)) {
+            tempIds.push({
+              senderId: response[a].senderId,
+              senderUsername: response[a].senderUsername,
+            })
+          }
+        }
+        setTabs(tempIds)
+        console.log(tempIds)
+        
         setMessages(response)
       }
     }
@@ -248,12 +258,14 @@ function LotInfo() {
     }
 
     async function handleSendMessage() {
-      let receiverId = lot[0]?.ownerId
-      if (socket === null) {
-        ws.current = new WebSocket('ws://localhost:8080');
+      let receiverId = 0
+      if (userId === 2) {
+        receiverId = 3
       } else {
-        ws.current = socket
+        receiverId = 2
       }
+      
+      console.log(ws.current)
       
 
       const messageData = {
@@ -262,9 +274,7 @@ function LotInfo() {
         senderId: userId,
         receiverId: receiverId,
       };
-      ws.current.onopen = async () => {
         ws.current.send(JSON.stringify(messageData))
-      }
       
     }
 
@@ -312,13 +322,23 @@ function LotInfo() {
        
        </div>
       <div className="ms-3 mt-2">
-        <div className="d-flex flex-column border rounded p-5 w-75 text-break">
-        {messages?.map(message => (
-          <span className="mt-2 mb-2">Отправитель: {message.senderUsername} Содержимое: {message.content}</span>
-        ))}
-        </div>
-        <input onChange={(e) => setContent(e.target.value)} type="text" className="form-control mt-2 w-75" placeholder="Контент"></input>
-        <button className="mt-2 mb-2 btn btn-outline-primary w-75" onClick={handleSendMessage}>Отправить</button>
+        <div className="d-flex">
+          <div className="d-flex flex-column">
+            <h2>Чаты</h2>
+              <div className="border rounded p-2 ms-2 me-2">
+                <button className="btn btn-primary">test</button>
+              </div>
+          </div>
+          <div>
+          <div className="d-flex flex-column border rounded p-5 w-75 text-break">
+            {messages?.map(message => (
+              <span className="mt-2 mb-2">Отправитель: {message.senderUsername} Содержимое: {message.content}</span>
+            ))}
+          </div>
+          <input onChange={(e) => setContent(e.target.value)} type="text" className="form-control mt-2 w-75" placeholder="Контент"></input>
+          <button className="mt-2 mb-2 btn btn-outline-primary w-75" onClick={handleSendMessage}>Отправить</button>
+          </div>
+          </div>
       </div>
       </div>
     </div>

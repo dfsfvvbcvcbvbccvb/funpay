@@ -11,15 +11,16 @@ const server = new WebSocketServer({ port: 8080 })
 app.use(express.json())
 app.use(cookieParser());
 app.use(express.urlencoded({ extended: true }))
+let activeClients = new Map()
 
 server.on('connection', async (ws) => {
     let currentUserId = null
-    let activeClients = new Map()
     ws.on('message', async (message) => {
         let parsed = JSON.parse(message)
         let messageString = message.toString();
         messageString = JSON.parse(messageString)
         activeClients.set(Number(messageString.senderId), ws)
+        console.log(messageString.senderId)
         let response = ''
         if (messageString.get === true) {
             response = await getMessages(messageString)
@@ -31,7 +32,13 @@ server.on('connection', async (ws) => {
         
         if (messageString.get === true) {
             let receiverWs = activeClients.get(Number(messageString.senderId))
+            let receiverWs2 = activeClients.get(Number(messageString.receiverId))
             receiverWs.send(JSON.stringify(response))
+            if (receiverWs2 !== undefined) {
+                receiverWs2.send(JSON.stringify(response))
+            }
+            
+            
             
         }
     })
