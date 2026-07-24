@@ -3,7 +3,7 @@ import mysql from 'mysql2/promise';
 import cookieParser from 'cookie-parser';
 import { WebSocketServer } from 'ws';
 
-import { registration, login, getGames, getGameById, createGame, createCategory, getCategories, createLot, getLots, getLotById, getUserById, getCategoryById, getLotsByUserId, getBalanceByUserId, getOrdersByUserId, buyOrder, sendMessage, getMessages, trustSellerCheck, getFinancesByUserId, getSalesByUserId, confirmLot, createTicket, getTicketsByUserId, getTicketInfo, sendSupportMessage, getSupportMessages, deleteTicket, changeTicketStatus, getOrderByLotId, orderMoneyBack, deleteLotById, getUserBySessionId, logout, getUnreadMessages, messagesRead, makeOnline, getOnlineUsers, addReview, getReviews, getAutoIssueByLotId, getAllReviews, editLot } from './repository.js';
+import { registration, login, getGames, getGameById, createGame, createCategory, getCategories, createLot, getLots, getLotById, getUserById, getCategoryById, getLotsByUserId, getBalanceByUserId, getOrdersByUserId, buyOrder, sendMessage, getMessages, trustSellerCheck, getFinancesByUserId, getSalesByUserId, confirmLot, createTicket, getTicketsByUserId, getTicketInfo, sendSupportMessage, getSupportMessages, deleteTicket, changeTicketStatus, getOrderByLotId, orderMoneyBack, deleteLotById, getUserBySessionId, logout, getUnreadMessages, messagesRead, makeOnline, getOnlineUsers, addReview, getReviews, getAutoIssueByLotId, getAllReviews, editLot, getTabMessages } from './repository.js';
 const app = express()
 const PORT = 4000
 const server = new WebSocketServer({ port: 8080 })
@@ -20,17 +20,20 @@ server.on('connection', async (ws) => {
         let messageString = message.toString();
         messageString = JSON.parse(messageString)
         activeClients.set(Number(messageString.senderId), ws)
-        console.log(messageString.senderId)
         let response = ''
         if (messageString.get === true) {
             response = await getMessages(messageString)
-        } else {
+        }
+        if (messageString.getTab === true) {
+            response = await getTabMessages(messageString)
+            console.log(response)
+        } else if (messageString.get !== true) {
             await sendMessage(messageString)
             response = await getMessages(messageString)
             messageString.get = true
         }
         
-        if (messageString.get === true) {
+        if (messageString.get === true || messageString.getTab === true) {
             let receiverWs = activeClients.get(Number(messageString.senderId))
             let receiverWs2 = activeClients.get(Number(messageString.receiverId))
             receiverWs.send(JSON.stringify(response))

@@ -992,3 +992,14 @@ export async function editLot(formdata) {
         return 'Успешно!'
     }
 }
+
+export async function getTabMessages(formdata) {
+    let connection = await getConnection()
+
+    let [rows] = await connection.execute(
+        `SELECT * FROM messages WHERE lotId = ? AND senderId = ? AND receiverId = ? OR lotId = ? AND senderId = ? AND receiverId = ?`,
+        [formdata.lotId, formdata.senderId, formdata.receiverId, formdata.lotId, formdata.receiverId, formdata.senderId]
+    )
+
+    return rows
+}

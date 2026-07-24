@@ -79,7 +79,7 @@ function LotInfo() {
         loadingLot()
     }, [userId])
 
-    async function getMessages(id2, id3, id4) {
+    async function getMessages(id2, id3, id4, getTab) {
       if (socket === null) {
         socket = new WebSocket('ws://localhost:8080')
       }
@@ -87,30 +87,42 @@ function LotInfo() {
       if (id4 === '') {
         return
       }
-      let messageData = {
+      let messageData = ''
+      if (getTab === true) {
+       messageData = {
         senderId: id4,
-        receiverId: 2,
+        receiverId: id2,
         lotId: id3,
-        get: true
-      };
+        getTab: true
+       }; 
+      } else {
+        messageData = {
+          senderId: id4,
+          receiverId: id2,
+          lotId: id3,
+          get: true
+        };
+      }
+      console.log(messageData)
       ws.current.onopen = () => {
         ws.current.send(JSON.stringify(messageData))
       }
       ws.current.onmessage = (event) => {
         let response = JSON.parse(event.data)
         let tempIds = []
+        let tabs = []
         for (let a = 0; a < response.length; a++) {
-          if (!tempIds.includes(response[a].senderId)) {
-            tempIds.push({
-              senderId: response[a].senderId,
+          if (!tempIds.includes(response[a].senderUsername)) {
+            tempIds.push(response[a].senderUsername)
+            tabs.push({
               senderUsername: response[a].senderUsername,
+              senderId: response[a].senderId
             })
           }
         }
-        setTabs(tempIds)
-        console.log(tempIds)
-        
+        setTabs(tabs)
         setMessages(response)
+        return response
       }
     }
 
@@ -265,7 +277,6 @@ function LotInfo() {
         receiverId = 2
       }
       
-      console.log(ws.current)
       
 
       const messageData = {
@@ -276,6 +287,17 @@ function LotInfo() {
       };
         ws.current.send(JSON.stringify(messageData))
       
+    }
+
+    async function generateTabMessages(id) {
+      let formdata = {
+        id: id,
+        ownerId: lot[0]?.ownerId,
+        lotId: lot[0]?.id,
+        get: true
+      }
+
+      let test = await getMessages(userId, lot[0]?.id, id, true)
     }
 
   return (
@@ -325,9 +347,12 @@ function LotInfo() {
         <div className="d-flex">
           <div className="d-flex flex-column">
             <h2>Чаты</h2>
-              <div className="border rounded p-2 ms-2 me-2">
-                <button className="btn btn-primary">test</button>
+            {tabs?.map(tab => (
+              <div className="border rounded p-2 me-2 mt-1">
+                <button onClick={() => generateTabMessages(tab.senderId)} className="btn btn-primary">{tab.senderUsername}</button>
               </div>
+            ))}
+              
           </div>
           <div>
           <div className="d-flex flex-column border rounded p-5 w-75 text-break">
