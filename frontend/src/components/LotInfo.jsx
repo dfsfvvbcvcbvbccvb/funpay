@@ -19,10 +19,12 @@ function LotInfo() {
     const [content, setContent] = useState('')
     const [comment, setComment] = useState('')
     const [amountStars, setAmountStars] = useState('')
+    const [currentUsername, setCurrentUsername] = useState('')
     const [autoIssue, setAutoIssue] = useState('')
     const [autoIssueJSX, setAutoIssueJSX] = useState(false)
     const [messages, setMessages] = useState([])
     const [tabs, setTabs] = useState([])
+    const [currentReceiverId, setCurrentReceiverId] = useState('')
     const [userId, setUserId] = useState('')
     let socket = null
 
@@ -103,24 +105,36 @@ function LotInfo() {
           get: true
         };
       }
-      console.log(messageData)
+
       ws.current.onopen = () => {
         ws.current.send(JSON.stringify(messageData))
       }
       ws.current.onmessage = (event) => {
         let response = JSON.parse(event.data)
-        let tempIds = []
-        let tabs = []
-        for (let a = 0; a < response.length; a++) {
-          if (!tempIds.includes(response[a].senderUsername)) {
-            tempIds.push(response[a].senderUsername)
-            tabs.push({
-              senderUsername: response[a].senderUsername,
-              senderId: response[a].senderId
-            })
-          }
+        if (tabs.length === 0) {
+            let tempIds = []
+            let tabs = []
+            for (let a = 0; a < response.length; a++) {                                         
+              if (!tempIds.includes(response[a].senderUsername)) {
+                tempIds.push(response[a].senderUsername)
+                if (Number(userId) === Number(response[a].senderId) && currentUsername === '') {
+                  setCurrentUsername(response[a].senderUsername)
+                } else {
+                  if (response[a].senderUsername === currentUsername) {
+                    
+                  } else {
+                    tabs.push({
+                      senderUsername: response[a].senderUsername,
+                      senderId: response[a].senderId
+                    })
+                  }
+                  
+                }
+              }
+            }
+            setTabs(tabs)
         }
-        setTabs(tabs)
+        
         setMessages(response)
         return response
       }
@@ -255,9 +269,9 @@ function LotInfo() {
       if (!confirmation) {
         return (
           <div className="d-flex flex-column">
-          <div class="form-floating mb-2 mt-2">
+          <div className="form-floating mb-2 mt-2">
               <input className="form-control" type="number" onChange={(e) => setQuantity(e.target.value)} id="floatingPassword" placeholder="Сколько штук хотите купить" required></input>
-              <label for="floatingPassword">Сколько штук хотите купить</label>
+              <label>Сколько штук хотите купить</label>
           </div>
           <div className="mt-2 mb-2">
             <span className="p-2 border rounded mb-2 mt-2 text-secondary">Итоговая цена: {lot[0]?.price * quantity}₽</span>
@@ -270,14 +284,16 @@ function LotInfo() {
     }
 
     async function handleSendMessage() {
-      let receiverId = 0
-      if (userId === 2) {
-        receiverId = 3
-      } else {
-        receiverId = 2
+      let receiverId = ''
+      if (Number(lot[0]?.ownerId) === Number(userId)) {
+        receiverId = currentReceiverId
       }
-      
-      
+      if (lot[0]?.ownerId === userId && tabs.length === 0) {
+        setError('Вы не можете отправить сообщение самому себе')
+        return
+      } else if (lot[0]?.ownerId !== userId) {
+        receiverId = lot[0]?.ownerId
+      }
 
       const messageData = {
         content: content,
@@ -298,6 +314,7 @@ function LotInfo() {
       }
 
       let test = await getMessages(userId, lot[0]?.id, id, true)
+      setCurrentReceiverId(id)
     }
 
   return (
@@ -348,7 +365,7 @@ function LotInfo() {
           <div className="d-flex flex-column">
             <h2>Чаты</h2>
             {tabs?.map(tab => (
-              <div className="border rounded p-2 me-2 mt-1">
+              <div key={tab.senderId} className="border rounded p-2 me-2 mt-1">
                 <button onClick={() => generateTabMessages(tab.senderId)} className="btn btn-primary">{tab.senderUsername}</button>
               </div>
             ))}
@@ -357,7 +374,7 @@ function LotInfo() {
           <div>
           <div className="d-flex flex-column border rounded p-5 w-75 text-break">
             {messages?.map(message => (
-              <span className="mt-2 mb-2">Отправитель: {message.senderUsername} Содержимое: {message.content}</span>
+              <span key={message.id} className="mt-2 mb-2">Отправитель: {message.senderUsername} Содержимое: {message.content}</span>
             ))}
           </div>
           <input onChange={(e) => setContent(e.target.value)} type="text" className="form-control mt-2 w-75" placeholder="Контент"></input>

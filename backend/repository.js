@@ -538,7 +538,12 @@ export async function getMessages(formdata) {
     let tempRows = []
     for (let a = 0; a < rows.length; a++) {
         if (Number(rows[a].senderId) === Number(formdata.receiverId) || Number(rows[a].senderId) === Number(formdata.senderId) || Number(rows[a].receiverId) === Number(formdata.senderId)) {
-            tempRows.push(rows[a])
+            if (Number(formdata.senderId) !== Number(rows[a].senderId) && Number(formdata.senderId) !== Number(rows[a].receiverId)) {
+            } else {
+                tempRows.push(rows[a])
+            }
+            
+            
         }
     }
 

@@ -2,6 +2,7 @@ import Navbar from "./Navbar"
 import Footer from "./Footer"
 import { useEffect, useState } from "react"
 import { useNavigate } from "react-router-dom"
+import React from "react"
 import getUserId from "./getUserId"
 import axios from "axios"
 
@@ -95,9 +96,9 @@ function Messages() {
                 </thead>
                 <tbody>
                     {messages?.map(message => (
-                        <>
+                        <React.Fragment key={message.id}>
                             {generateMessages(message)}
-                        </>
+                        </React.Fragment>
                     ))}
                 </tbody>
             </table>

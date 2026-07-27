@@ -2,6 +2,7 @@ import Navbar from "./Navbar"
 import Footer from "./Footer"
 import { useState, useEffect } from "react"
 import { useParams } from "react-router-dom"
+import React from "react"
 import axios from "axios"
 
 function Profile() {
@@ -93,9 +94,9 @@ function Profile() {
                 </thead>
                 <tbody>
                     {lots.map(lot => (
-                    <>
+                    <React.Fragment key={lot.id}>
                     {generateLots(lot)}
-                    </>
+                    </React.Fragment>
                     ))}
                 </tbody>
                 </table>
@@ -104,13 +105,13 @@ function Profile() {
                     <h3>Отзывы</h3>
                   )}
                     {reviews.map(review => (
-                      <>
+                      <React.Fragment key={review.id}>
                         <div className="border rounded p-2 d-flex flex-column">
                             <span>Отправитель: {review.senderUsername}</span>
                             <span className="mt-2 text-secondary">Содержимое: {review.comment}</span>
                             <span className="text-warning">Количество звёзд: {review.amountStars}</span>
                         </div>
-                        </>
+                        </React.Fragment>
                     ))}
                 </div>
                 <Footer></Footer>

@@ -26,10 +26,9 @@ server.on('connection', async (ws) => {
         }
         if (messageString.getTab === true) {
             response = await getTabMessages(messageString)
-            console.log(response)
         } else if (messageString.get !== true) {
             await sendMessage(messageString)
-            response = await getMessages(messageString)
+            response = await getTabMessages(messageString)
             messageString.get = true
         }
         
@@ -46,7 +45,6 @@ server.on('connection', async (ws) => {
         }
     })
     ws.on('close', () => {
-        console.log('testik')
     })
 })
 

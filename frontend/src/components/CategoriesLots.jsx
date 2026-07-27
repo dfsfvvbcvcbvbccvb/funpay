@@ -1,6 +1,7 @@
 import { useNavigate } from "react-router-dom"
 import { useState } from "react"
 import { useEffect } from "react"
+import React from "react"
 import { useParams } from "react-router-dom"
 import axios from "axios"
 import Navbar from "./Navbar"
@@ -78,9 +79,9 @@ function CategoriesLots() {
           </thead>
           <tbody>
             {lots.map(lot => (
-            <>
+            <React.Fragment key={lot.id}>
             {generateLots(lot)}
-            </>
+            </React.Fragment>
             ))}
           </tbody>
         </table>

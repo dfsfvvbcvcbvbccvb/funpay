@@ -117,7 +117,6 @@ function CreateLot() {
         }
         setGame(response.data)
       } catch (e) {
-        console.log(e)
       }
     }
     loadingCategories()
@@ -135,44 +134,44 @@ function CreateLot() {
                 <h1>Создание лота для игры {game.name}</h1>
                 <form onSubmit={handleFormSubmit}>
                 <div>
-                    <div class="form-floating mb-3">
+                    <div className="form-floating mb-3">
                         <input className="form-control form-control-lg m-2" onChange={(e) => setName(e.target.value)} id="floatingPassword" type="text" placeholder="Название" aria-label=".form-control-lg example" required></input>
-                        <label for="floatingPassword">Название</label>
+                        <label>Название</label>
                     </div>
                     
-                    <div class="form-floating mb-3">
+                    <div className="form-floating mb-3">
                         <input className="form-control m-2" type="text" onChange={(e) => setDescription(e.target.value)} id="floatingPassword" placeholder="Описание" aria-label="default input example" required></input>
-                        <label for="floatingPassword">Описание</label>
+                        <label>Описание</label>
                     </div>
                     
-                    <div class="form-floating mb-3">
+                    <div className="form-floating mb-3">
                         <input className="form-control m-2" type="number" onChange={(e) => setQuantity(e.target.value)} id="floatingPassword" placeholder="Количество" aria-label="default input example" required></input>
-                        <label for="floatingPassword">Количество</label>
+                        <label>Количество</label>
                     </div>
                     
-                    <div class="form-floating mb-3">
+                    <div className="form-floating mb-3">
                         <input className="form-control m-2" type="number" onChange={(e) => setPrice(e.target.value)} id="floatingPassword" placeholder="Цена за 1 штуку" aria-label="default input example" required></input>
-                        <label for="floatingPassword">Цена за 1 штуку</label>
+                        <label>Цена за 1 штуку</label>
                     </div>
 
                     <div className="form-check">
-                    <input onChange={(e) => setActive(e.target.checked)} class="form-check-input" type="checkbox" id="flexCheckChecked"></input>
-                    <label className="form-check-label" for="flexCheckChecked">
+                    <input onChange={(e) => setActive(e.target.checked)} className="form-check-input" type="checkbox" id="flexCheckChecked"></input>
+                    <label className="form-check-label">
                         Активный
                     </label>
                     </div>
 
                     <div className="form-check">
-                    <input onChange={(e) => setAutoIssue(e.target.checked)} class="form-check-input" type="checkbox" id="flexCheckChecked"></input>
-                    <label className="form-check-label" for="flexCheckChecked">
+                    <input onChange={(e) => setAutoIssue(e.target.checked)} className="form-check-input" type="checkbox" id="flexCheckChecked"></input>
+                    <label className="form-check-label">
                         Автовыдача
                     </label>
                     </div>
                     {autoIssue && (
                         <div className="border rounded p-2 d-flex flex-column">
-                            <div class="mb-3">
-                                <label for="exampleFormControlTextarea1" class="form-label">Поле для автовыдачи</label>
-                                <textarea onChange={(e) => setAutoIssueValue(e.target.value)} class="form-control" id="exampleFormControlTextarea1" rows="3"></textarea>
+                            <div classNaame="mb-3">
+                                <label className="form-label">Поле для автовыдачи</label>
+                                <textarea onChange={(e) => setAutoIssueValue(e.target.value)} className="form-control" id="exampleFormControlTextarea1" rows="3"></textarea>
                             </div>
                         </div>
                     )}
