@@ -14,9 +14,16 @@ function RegisterPage() {
     async function handleFormSubmit(e) {
         e.preventDefault()
 
-        if (login === '') {return}
-        if (email === '') {return}
-        if (password === '') {return}
+        const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        let test = regex.test(email)
+        if (test === false) {
+            setError('Введите корректный email!')
+            return
+        }
+
+        if (login === '' || email === '' || password === '') {
+            return
+        }
 
         let formdata = {
             login: login,
@@ -48,9 +55,9 @@ function RegisterPage() {
                     <div>
                         
                         <span className="mt-2">Или с помощью имени, почты и пароля:</span>
-                        <input onChange={(e) => setLogin(e.target.value)} type="text" className="form-control mt-2" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Имя или ник" required></input>
-                        <input onChange={(e) => setEmail(e.target.value)} type="email" className="form-control mt-2" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Почта" required></input>
-                        <input onChange={(e) => setPassword(e.target.value)} type="password" className="form-control mt-2" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Пароль" required></input>
+                        <input onChange={(e) => setLogin(e.target.value)} type="text" className="form-control mt-2" placeholder="Имя или ник" required></input>
+                        <input onChange={(e) => setEmail(e.target.value)} type="email" className="form-control mt-2" placeholder="Почта" required></input>
+                        <input onChange={(e) => setPassword(e.target.value)} type="password" className="form-control mt-2" placeholder="Пароль" required></input>
                         <a href="/account/recover" className="link-primary text-decoration-none mt-2">Забыли пароль?</a>
                     </div>
                     <button type="submit" className="btn btn-primary">Зарегестрироваться</button>

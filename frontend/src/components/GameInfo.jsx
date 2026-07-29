@@ -1,9 +1,8 @@
 import Navbar from "./Navbar";
 import Footer from "./Footer";
 import axios from "axios";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
 
 function GameInfo() {
 
@@ -40,7 +39,7 @@ function GameInfo() {
       <h4 className="border-top fs-2">Категории:</h4>
       <div className="d-flex">
         {game.categories?.map(category => (
-          <a key={category.id} href={`/lots/${game.id}/${category.id}`} className="btn btn-primary mt-2 mb-2 me-2 btn-lg">{category.name}</a>
+          <a key={category.id} style={{width: 120}} href={`/lots/${game.id}/${category.id}`} className="btn btn-primary mt-2 mb-2 me-2 btn-lg">{category.name}</a>
         ))}
       </div>
       <a href={`/lots/create/${game.id}`}>Создать Лот</a>

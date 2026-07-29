@@ -112,7 +112,9 @@ function Navbar() {
                         <a className='text-decoration-none link-secondary me-2' href='/orders'>Покупки</a>
                         <a className='text-decoration-none link-secondary me-2' href='/orders/trade'>Продажи</a>
                         <a className='text-decoration-none link-secondary me-2' href='/account/balance'>Финансы</a>
-                        <a className='text-decoration-none link-secondary me-2' href='/messages'>Сообщения {amountUnread}</a>
+                        <a type="button" href='/messages' class="btn btn-primary btn-sm" style={{width: 130, height: 30}}>
+                        Messages <span class="badge bg-info">{amountUnread}</span>
+                        </a>
                         <a className='text-decoration-none link-secondary me-2' href={`/accounts/profile/${userId}`}>Профиль</a>
                         <a className='text-decoration-none link-secondary me-2' onClick={logout} href='/'>Выход</a>
                         </>

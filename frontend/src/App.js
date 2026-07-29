@@ -23,10 +23,6 @@ import { useEffect } from 'react';
 import EditLot from './components/EditLot';
 
 function AppRoutes() {
-
-    useEffect(() => {
-        document.title = 'FunPay'
-    }, [])
  
     return (
         <Routes>

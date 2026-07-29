@@ -38,6 +38,10 @@ function CreateGame() {
             categoriesIds: categoriesId,
             creatorId: userId
         }
+        if (formdata.name === '' || formdata.description === '') {
+            setError('Заполните название или описание игры!')
+            return
+        }
         if (formdata.categoriesIds === '') {
             setError('У игры должны быть категории!')
             return

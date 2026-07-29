@@ -1,8 +1,7 @@
 import { useNavigate } from "react-router-dom"
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import Footer from "../Footer";
 import SupportNavbar from "./SupportNavbar";
-import { useState } from "react";
 import axios from "axios";
 import getUserId from "../getUserId";
 
@@ -46,7 +45,7 @@ function SupportTickets() {
               <SupportNavbar></SupportNavbar>
           </div>
           <div>
-              <h1>Ваши запросы</h1>
+              <h2>Ваши запросы:</h2>
               <div className="d-flex flex-column">
                 {tickets.map(ticket => (
                     <a href={`/support/ticket/${ticket.id}`} key={ticket.id} className="btn btn-primary m-2 w-25">Тикет номер: {ticket.id}</a>

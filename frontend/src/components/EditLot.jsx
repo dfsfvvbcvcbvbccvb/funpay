@@ -2,8 +2,7 @@ import Navbar from "./Navbar";
 import { useEffect, useState } from "react";
 import Footer from "./Footer";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import getUserId from "./getUserId";
 
 function EditLot() {

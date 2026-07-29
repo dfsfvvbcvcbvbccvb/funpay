@@ -35,6 +35,10 @@ function CreateCategory() {
             description: description,
             creatorId: userId
         }
+        if (formdata.name === '' || formdata.description === '') {
+            setError('Заполните название или описание игры!')
+            return
+        }
         if (name.length > 25 || description.length > 25) {
             setError('Сделайте название или описание игры меньше!')
             return

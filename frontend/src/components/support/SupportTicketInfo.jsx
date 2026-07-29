@@ -13,6 +13,7 @@ function SupportTicketInfo() {
     const [message, setMessage] = useState('')
     const [admin, setAdmin] = useState(false)
     const [resolved, setResolved] = useState(false)
+    const [error, setError] = useState('')
     const navigate = useNavigate()
     let [userId, setUserId] = useState()
 
@@ -57,7 +58,11 @@ function SupportTicketInfo() {
     }, [userId])
 
     async function handleSendMessage() {
-        let userId = userId
+
+        if (message === '') {
+            setError('Сообщение не должно быть пустым')
+            return
+        }
 
         let formdata = {
             senderId: userId,
@@ -126,12 +131,12 @@ function SupportTicketInfo() {
                 <span>{ticket[0]?.problem}</span>
               </div>
               <label className="border-top">Описание проблемы:</label>
-              <span className="border p-2">{ticket[0]?.content}</span>
-          </div>
+              <span className="">{ticket[0]?.content}</span>
+          </div>       
           <div className="d-flex flex-column">
-            <label className="border-top border-primary mt-4">Сообщения:</label>
+            <label className="mt-4">Сообщения:</label>
           {messages.map(message => (
-            <div key={message.id} className="border mt-2">
+            <div key={message.id} className="border mt-2 w-50">
             <label>Отправитель: {message.senderUsername}</label>
             <div>
             <label className="mt-3">Содержимое:</label>
@@ -153,6 +158,11 @@ function SupportTicketInfo() {
             <button className="btn btn-primary mt-2 w-25" onClick={handleSendMessage}>Отправить</button>
           </div>
            )}
+            {error && (
+                <div class="alert alert-danger mt-2">
+                    <h3>{error}</h3>
+                </div>
+            )} 
            </>
           
           <Footer></Footer>

@@ -102,7 +102,7 @@ function Profile() {
                 </table>
                 <div className="d-flex flex-column">
                   {reviews.length > 1 && (
-                    <h3>Отзывы</h3>
+                    <h3>Отзывы:</h3>
                   )}
                     {reviews.map(review => (
                       <React.Fragment key={review.id}>

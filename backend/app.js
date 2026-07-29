@@ -3,7 +3,7 @@ import mysql from 'mysql2/promise';
 import cookieParser from 'cookie-parser';
 import { WebSocketServer } from 'ws';
 
-import { registration, login, getGames, getGameById, createGame, createCategory, getCategories, createLot, getLots, getLotById, getUserById, getCategoryById, getLotsByUserId, getBalanceByUserId, getOrdersByUserId, buyOrder, sendMessage, getMessages, trustSellerCheck, getFinancesByUserId, getSalesByUserId, confirmLot, createTicket, getTicketsByUserId, getTicketInfo, sendSupportMessage, getSupportMessages, deleteTicket, changeTicketStatus, getOrderByLotId, orderMoneyBack, deleteLotById, getUserBySessionId, logout, getUnreadMessages, messagesRead, makeOnline, getOnlineUsers, addReview, getReviews, getAutoIssueByLotId, getAllReviews, editLot, getTabMessages } from './repository.js';
+import { registration, login, getGames, getGameById, createGame, createCategory, getCategories, createLot, getLots, getLotById, getUserById, getCategoryById, getLotsByUserId, getBalanceByUserId, getOrdersByUserId, buyOrder, sendMessage, getMessages, trustSellerCheck, getFinancesByUserId, getSalesByUserId, confirmLot, createTicket, getTicketsByUserId, getTicketInfo, sendSupportMessage, getSupportMessages, deleteTicket, changeTicketStatus, getOrderByLotId, orderMoneyBack, deleteLotById, getUserBySessionId, logout, getUnreadMessages, messagesRead, makeOnline, getOnlineUsers, addReview, getReviews, getAutoIssueByLotId, getAllReviews, editLot, getTabMessages, accountRecovery } from './repository.js';
 const app = express()
 const PORT = 4000
 const server = new WebSocketServer({ port: 8080 })
@@ -379,12 +379,22 @@ app.post('/api/review', async (req,res) => {
         senderId: req.body.senderId
     }
 
+    if (formdata.userId === '' || formdata.amountStars === '' || formdata.comment === '' || formdata.lotId === '' || formdata.senderId === '') {
+        res.json('Ошибка!')
+        return
+    }
+
     let response = await addReview(formdata)
     res.json(response)
 })
 app.post('/api/review/:id', async (req,res) => {
     let formdata = {
         userId: req.params.id
+    }
+
+    if (formdata.userId === '') {
+        res.json('Ошибка!')
+        return
     }
 
     let response = await getReviews(formdata)
@@ -396,6 +406,11 @@ app.post('/api/auto/:id', async (req,res) => {
         lotId: req.params.id
     }
 
+    if (formdata.lotId === '') {
+        res.json('Ошибка!')
+        return
+    }
+
     let response = await getAutoIssueByLotId(formdata)
     res.json(response)
 })
@@ -405,7 +420,21 @@ app.post('/api/reviews/:id', async (req, res) => {
         userId: req.params.id
     }
 
+    if (formdata.userId === '') {
+        res.json('Ошибка!')
+        return
+    }
+
     let response = await getAllReviews(formdata)
+    res.json(response)
+})
+
+app.post('/account/recovery', async (req, res) => {
+    let formdata = {
+        email: req.body.email
+    }
+
+    let response = await accountRecovery(formdata)
     res.json(response)
 })
 
@@ -417,6 +446,11 @@ app.post('/edit/:game_id/:category_id/:lotId', async (req, res) => {
         price: req.body.price,
         quantity: req.body.quantity,
         userId: req.body.userId
+    }
+
+    if (formdata.name === '' || formdata.description === '' || formdata.price === '' || formdata.quantity === '' || formdata.lotId === '' || formdata.userId === '') {
+        res.json('Ошибка!')
+        return
     }
 
     let response = await editLot(formdata)

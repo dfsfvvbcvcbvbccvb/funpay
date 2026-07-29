@@ -13,10 +13,8 @@ function LoginPage() {
     async function handleFormSubmit(e) {
         e.preventDefault()
 
-        if (usernameOrEmail === '') {
-            return
-        }
-        if (password === '') {
+        if (usernameOrEmail === '' || password === '') {
+            setError('Заполните все поля!')
             return
         }
 
@@ -28,13 +26,12 @@ function LoginPage() {
 
         try {
             res = await axios.post('/api/login', formdata)
-            if (res.data.res !== 'Успешно!') {
-                setError(res.data)
-                return
-            }
             if (res.data.res === 'Успешно!') {
                 localStorage.setItem('loginned', true)
                 navigate('/')
+            } else {
+                setError(res.data)
+                return
             }
         } catch (error) {
             console.log(error)
@@ -55,8 +52,8 @@ function LoginPage() {
                     </div>
                     <div>
                         <span className="mt-2">Или с помощью имени, почты и пароля:</span>
-                        <input onChange={(e) => setUsernameOrEmail(e.target.value)} type="text" className="form-control mt-2" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Имя или почта"></input>
-                        <input onChange={(e) => setPassword(e.target.value)} type="password" className="form-control mt-2" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Пароль"></input>
+                        <input onChange={(e) => setUsernameOrEmail(e.target.value)} type="text" className="form-control mt-2" placeholder="Имя или почта"></input>
+                        <input onChange={(e) => setPassword(e.target.value)} type="password" className="form-control mt-2" placeholder="Пароль"></input>
                         <a href="/account/recover" className="link-primary text-decoration-none mt-2">Забыли пароль?</a>
                     </div>
                     <button type="submit" className="btn btn-primary">Войти</button>

@@ -1,9 +1,8 @@
 import { useState, useEffect, useRef  } from "react"
-import { useParams } from "react-router-dom"
+import { useParams, useNavigate } from "react-router-dom"
 import axios from "axios"
 import Navbar from "./Navbar"
 import Footer from "./Footer"
-import { useNavigate } from "react-router-dom"
 import getUserId from "./getUserId"
 
 function LotInfo() {
@@ -24,6 +23,7 @@ function LotInfo() {
     const [autoIssueJSX, setAutoIssueJSX] = useState(false)
     const [messages, setMessages] = useState([])
     const [tabs, setTabs] = useState([])
+    const firstTabLoading = useRef()
     const [currentReceiverId, setCurrentReceiverId] = useState('')
     const [userId, setUserId] = useState('')
     let socket = null
@@ -132,7 +132,14 @@ function LotInfo() {
                 }
               }
             }
-            setTabs(tabs)
+            if (firstTabLoading.current === true) {
+
+            } else {
+              setTabs(tabs)
+              firstTabLoading.current = true
+            }
+            
+            
         }
         
         setMessages(response)
@@ -295,6 +302,11 @@ function LotInfo() {
         receiverId = lot[0]?.ownerId
       }
 
+      if (content === '') {
+        setError('Сообщение не должно быть пустым!')
+        return
+      }
+
       const messageData = {
         content: content,
         lotId: lot[0]?.id,
@@ -357,7 +369,6 @@ function LotInfo() {
           </div>
         )}
        <Footer></Footer>
-
        
        </div>
       <div className="ms-3 mt-2">

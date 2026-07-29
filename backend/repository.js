@@ -399,6 +399,10 @@ export async function getCategories() {
         `SELECT * FROM categories`
     )
 
+    if (rows.length === 0) {
+        return 'Не найдено'
+    }
+
     await connection.end()
 
     return rows
@@ -412,6 +416,10 @@ export async function getOrdersByUserId(formdata) {
         [formdata]
     )
 
+    if (rows.length === 0) {
+        return 'Не найдено'
+    }
+
     await connection.end()
 
     return rows
@@ -424,6 +432,10 @@ export async function getFinancesByUserId(formdata) {
         `SELECT * FROM orders WHERE buyerId = ? OR sellerId = ?`,
         [formdata, formdata]
     )
+
+    if (rows.length === 0) {
+        return 'Не найдено'
+    }
 
     await connection.end()
 
@@ -1006,5 +1018,22 @@ export async function getTabMessages(formdata) {
         [formdata.lotId, formdata.senderId, formdata.receiverId, formdata.lotId, formdata.receiverId, formdata.senderId]
     )
 
+    await connection.end()
+
     return rows
+}
+
+export async function accountRecovery(formdata) {
+    let connection = await getConnection()
+
+    let [rows] = await connection.execute(
+        `SELECT login FROM accounts WHERE email = ?`,
+        [formdata.email]
+    )
+
+    if (rows.length === 0) {
+        return 'Аккаунт не найден!'
+    }
+
+    return 'Успешно!'
 }

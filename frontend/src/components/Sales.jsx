@@ -1,9 +1,8 @@
 import Navbar from "./Navbar"
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import Footer from "./Footer";
-import { useEffect } from "react";
 import getUserId from "./getUserId";
 
 function Sales() {
